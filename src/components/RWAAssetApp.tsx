@@ -8,44 +8,8 @@ import { RWAAssetCreationForm } from './RWAAssetCreationForm';
 import { BalanceDisplay } from './BalanceDisplay';
 import type { RWAAsset } from '../types';
 
-// Contract configuration
-const RWA_ASSET_FACTORY_ADDRESS = '0x0000000000000000000000000000000000000000'; // Replace with deployed address
-const RWA_ASSET_FACTORY_ABI = [
-  {
-    "inputs": [
-      {"internalType": "string", "name": "assetName", "type": "string"},
-      {"internalType": "string", "name": "assetDescription", "type": "string"},
-      {"internalType": "uint256", "name": "totalSupply", "type": "uint256"},
-      {"internalType": "uint256", "name": "pricePerShare", "type": "uint256"},
-      {"internalType": "string", "name": "assetType", "type": "string"}
-    ],
-    "name": "createRWAAsset",
-    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{"internalType": "string", "name": "assetName", "type": "string"}],
-    "name": "getAllAssetNames",
-    "outputs": [{"internalType": "string[]", "name": "", "type": "string[]"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{"internalType": "string", "name": "assetName", "type": "string"}],
-    "name": "getAssetInfo",
-    "outputs": [
-      {"internalType": "string", "name": "", "type": "string"},
-      {"internalType": "string", "name": "", "type": "string"},
-      {"internalType": "uint256", "name": "", "type": "uint256"},
-      {"internalType": "uint256", "name": "", "type": "uint256"},
-      {"internalType": "string", "name": "", "type": "string"},
-      {"internalType": "address", "name": "", "type": "address"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
+// Import contract configuration
+import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/contracts';
 
 export function RWAAssetApp() {
   const { address, isConnected } = useAccount();
@@ -60,32 +24,49 @@ export function RWAAssetApp() {
     try {
       setLoading(true);
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const factory = new ethers.Contract(
-        RWA_ASSET_FACTORY_ADDRESS,
-        RWA_ASSET_FACTORY_ABI,
-        provider
-      );
+      // Try to load from contract first
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const factory = new ethers.Contract(
+          RWA_ASSET_FACTORY_ADDRESS,
+          RWA_ASSET_FACTORY_ABI,
+          provider
+        );
 
-      const assetNames = await factory.getAllAssetNames();
-      
-      const assetDetails = await Promise.all(
-        assetNames.map(async (name: string) => {
-          const [assetName, description, totalSupply, pricePerShare, assetType, assetAddress] = 
-            await factory.getAssetInfo(name);
-          
-          return {
-            name: assetName,
-            description,
-            totalSupply: Number(totalSupply),
-            pricePerShare: Number(pricePerShare) / 1000000, // Convert from wei
-            assetType,
-            assetAddress
-          };
-        })
-      );
+        const assetNames = await factory.getAllAssetNames();
+        console.log('Asset names from contract:', assetNames);
+        
+        if (assetNames.length > 0) {
+          const assetDetails = await Promise.all(
+            assetNames.map(async (name: string) => {
+              const [assetName, description, totalSupply, pricePerShare, assetType, assetAddress] = 
+                await factory.getAssetInfo(name);
+              
+              return {
+                id: assetNames.indexOf(name) + 1,
+                name: assetName,
+                description,
+                totalSupply: Number(totalSupply),
+                pricePerShare: Number(pricePerShare) / 1000000, // Convert from wei
+                assetType,
+                availableShares: Number(totalSupply),
+                totalValue: Number(totalSupply) * (Number(pricePerShare) / 1000000),
+                contractAddress: assetAddress
+              };
+            })
+          );
 
-      setAssets(assetDetails);
+          setAssets(assetDetails);
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to load assets from contract:', error);
+      }
+
+      // Fallback to sample data
+      const response = await fetch('/src/data/sample-assets.json');
+      const data = await response.json();
+      setAssets(data.assets);
     } catch (error) {
       console.error('Failed to load RWA assets:', error);
     } finally {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
+import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/contracts';
 
 interface RWAAssetCreationFormProps {
   onAssetCreated: () => void;
@@ -54,10 +55,18 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
       const priceInWei = Math.floor(pricePerShareNum * 1000000);
 
       const factoryContract = new ethers.Contract(
-        '0x0000000000000000000000000000000000000000', // Factory address
-        [], // ABI
+        RWA_ASSET_FACTORY_ADDRESS,
+        RWA_ASSET_FACTORY_ABI,
         signer
       );
+
+      console.log('Creating RWA asset with:', {
+        assetName,
+        assetDescription,
+        totalSupply: totalSupplyNum,
+        pricePerShare: priceInWei,
+        assetType
+      });
 
       const tx = await factoryContract.createRWAAsset(
         assetName,
@@ -235,7 +244,9 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
                 border: '1px solid #d1d5db',
                 borderRadius: '6px',
                 fontSize: '1rem',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                color: '#374151',
+                backgroundColor: '#ffffff'
               }}
             />
             <p style={{
@@ -270,7 +281,9 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
                 border: '1px solid #d1d5db',
                 borderRadius: '6px',
                 fontSize: '1rem',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                color: '#374151',
+                backgroundColor: '#ffffff'
               }}
             />
             <p style={{

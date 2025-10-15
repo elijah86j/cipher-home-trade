@@ -13,4 +13,12 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  optimizeDeps: {
+    exclude: ['valtio/vanilla']
+  },
+  build: {
+    rollupOptions: {
+      external: ['valtio/vanilla']
+    }
+  }
 })

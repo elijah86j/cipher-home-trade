@@ -3,6 +3,7 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { useZamaInstance } from '../hooks/useZamaInstance';
 import { useEthersSigner } from '../hooks/useEthersSigner';
+import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/contracts';
 import type { RWAAsset } from '../types';
 
 interface RWAAssetSubscriptionProps {
@@ -56,8 +57,8 @@ export function RWAAssetSubscription({
 
         // Call encrypted subscription function
         const factoryContract = new ethers.Contract(
-          '0x0000000000000000000000000000000000000000', // Factory address
-          [], // ABI
+          RWA_ASSET_FACTORY_ADDRESS,
+          RWA_ASSET_FACTORY_ABI,
           signer
         );
 
@@ -73,8 +74,8 @@ export function RWAAssetSubscription({
       } else {
         // Regular subscription
         const factoryContract = new ethers.Contract(
-          '0x0000000000000000000000000000000000000000', // Factory address
-          [], // ABI
+          RWA_ASSET_FACTORY_ADDRESS,
+          RWA_ASSET_FACTORY_ABI,
           signer
         );
 
@@ -258,7 +259,9 @@ export function RWAAssetSubscription({
               border: '1px solid #d1d5db',
               borderRadius: '6px',
               fontSize: '1rem',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              color: '#374151',
+              backgroundColor: '#ffffff'
             }}
           />
         </div>
