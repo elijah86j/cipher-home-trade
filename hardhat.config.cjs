@@ -1,4 +1,6 @@
-require("@nomicfoundation/hardhat-ethers");
+require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify");
+require("@fhevm/hardhat-plugin");
 require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -9,22 +11,28 @@ module.exports = {
       optimizer: {
         enabled: true,
         runs: 200,
-        viaIR: true
-      }
-    }
+      },
+      viaIR: true,
+    },
   },
   networks: {
+    hardhat: {
+      chainId: 31337,
+    },
     sepolia: {
-      url: process.env.SEPOLIA_RPC_URL || "https://1rpc.io/sepolia",
+      url: "https://ethereum-sepolia-rpc.publicnode.com",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
     },
-    localhost: {
-      url: "http://127.0.0.1:8545",
-      chainId: 31337,
-    }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY || "J8PU7AX1JX3RGEH1SNGZS4628BAH192Y3N"
-  }
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+  sourcify: {
+    enabled: true,
+  },
+  fhevm: {
+    // FHE configuration
+    network: "sepolia",
+  },
 };
