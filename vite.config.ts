@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [react()],
   define: { global: 'globalThis' },
   optimizeDeps: { 
-    include: ['@zama-fhe/relayer-sdk/bundle'] 
+    include: ['@zama-fhe/relayer-sdk/bundle', 'valtio', 'valtio/vanilla'] 
   },
   resolve: {
     alias: {
