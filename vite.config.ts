@@ -13,12 +13,16 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  define: {
+    global: 'globalThis',
+  },
   optimizeDeps: {
-    exclude: ['valtio/vanilla']
+    exclude: ['valtio/vanilla', 'valtio'],
+    include: ['@zama-fhe/relayer-sdk/bundle']
   },
   build: {
     rollupOptions: {
-      external: ['valtio/vanilla']
+      external: ['valtio/vanilla', 'valtio']
     }
   }
 })

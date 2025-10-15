@@ -5,103 +5,35 @@ import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/cont
 
 interface RWAAssetCreationFormProps {
   onAssetCreated: () => void;
+  formData: {
+    assetName: string;
+    assetDescription: string;
+    totalSupply: string;
+    pricePerShare: string;
+    assetType: string;
+  };
+  onFormDataChange: (field: string, value: string) => void;
+  onCreateAsset: () => void;
+  loading: boolean;
+  message: string;
 }
 
-export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormProps) {
+export function RWAAssetCreationForm({ 
+  onAssetCreated, 
+  formData, 
+  onFormDataChange, 
+  onCreateAsset, 
+  loading, 
+  message 
+}: RWAAssetCreationFormProps) {
   const { isConnected } = useAccount();
-  const [formData, setFormData] = useState({
-    assetName: '',
-    assetDescription: '',
-    totalSupply: '',
-    pricePerShare: '',
-    assetType: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    onFormDataChange(field, value);
   };
 
-  const handleCreateAsset = async () => {
-    if (!isConnected) {
-      setMessage('Please connect your wallet');
-      return;
-    }
-
-    const { assetName, assetDescription, totalSupply, pricePerShare, assetType } = formData;
-    
-    if (!assetName || !assetDescription || !totalSupply || !pricePerShare || !assetType) {
-      setMessage('Please fill all fields');
-      return;
-    }
-
-    const totalSupplyNum = parseInt(totalSupply);
-    const pricePerShareNum = parseFloat(pricePerShare);
-
-    if (totalSupplyNum <= 0 || pricePerShareNum <= 0) {
-      setMessage('Total supply and price must be greater than 0');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setMessage('');
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      // Convert price to wei (6 decimal places)
-      const priceInWei = Math.floor(pricePerShareNum * 1000000);
-
-      const factoryContract = new ethers.Contract(
-        RWA_ASSET_FACTORY_ADDRESS,
-        RWA_ASSET_FACTORY_ABI,
-        signer
-      );
-
-      console.log('Creating RWA asset with:', {
-        assetName,
-        assetDescription,
-        totalSupply: totalSupplyNum,
-        pricePerShare: priceInWei,
-        assetType
-      });
-
-      const tx = await factoryContract.createRWAAsset(
-        assetName,
-        assetDescription,
-        totalSupplyNum,
-        priceInWei,
-        assetType
-      );
-
-      setMessage('Transaction submitted. Waiting for confirmation...');
-      await tx.wait();
-
-      setMessage(`RWA Asset "${assetName}" created successfully!`);
-      
-      // Reset form
-      setFormData({
-        assetName: '',
-        assetDescription: '',
-        totalSupply: '',
-        pricePerShare: '',
-        assetType: ''
-      });
-
-      // Refresh assets list
-      setTimeout(() => {
-        onAssetCreated();
-        setMessage('');
-      }, 3000);
-
-    } catch (error: any) {
-      console.error('Asset creation failed:', error);
-      setMessage(`Asset creation failed: ${error.message || 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
+  const handleCreateAssetClick = () => {
+    onCreateAsset();
   };
 
   const assetTypes = [
@@ -153,7 +85,9 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
               border: '1px solid #d1d5db',
               borderRadius: '6px',
               fontSize: '1rem',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              color: '#374151',
+              backgroundColor: '#ffffff'
             }}
           />
         </div>
@@ -181,6 +115,8 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
               borderRadius: '6px',
               fontSize: '1rem',
               boxSizing: 'border-box',
+              color: '#374151',
+              backgroundColor: '#ffffff',
               resize: 'vertical'
             }}
           />
@@ -206,7 +142,9 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
               border: '1px solid #d1d5db',
               borderRadius: '6px',
               fontSize: '1rem',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              color: '#374151',
+              backgroundColor: '#ffffff'
             }}
           >
             <option value="">Select asset type</option>
@@ -337,7 +275,7 @@ export function RWAAssetCreationForm({ onAssetCreated }: RWAAssetCreationFormPro
 
         {/* Submit Button */}
         <button
-          onClick={handleCreateAsset}
+          onClick={handleCreateAssetClick}
           disabled={loading || !formData.assetName || !formData.assetDescription || 
                    !formData.totalSupply || !formData.pricePerShare || !formData.assetType || !isConnected}
           style={{

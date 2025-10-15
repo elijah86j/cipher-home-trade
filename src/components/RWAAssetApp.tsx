@@ -16,7 +16,18 @@ export function RWAAssetApp() {
   const [assets, setAssets] = useState<RWAAsset[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<RWAAsset | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'assets' | 'subscribe' | 'create'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'subscribe' | 'create'>('create');
+  
+  // Form data state to persist across tab switches
+  const [formData, setFormData] = useState({
+    assetName: '',
+    assetDescription: '',
+    totalSupply: '',
+    pricePerShare: '',
+    assetType: ''
+  });
+  const [formLoading, setFormLoading] = useState(false);
+  const [formMessage, setFormMessage] = useState('');
 
   const loadAssets = async () => {
     if (!isConnected) return;
@@ -86,6 +97,87 @@ export function RWAAssetApp() {
 
   const handleRefresh = () => {
     loadAssets();
+  };
+
+  const handleFormInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCreateAsset = async () => {
+    if (!isConnected) {
+      setFormMessage('Please connect your wallet');
+      return;
+    }
+
+    const { assetName, assetDescription, totalSupply, pricePerShare, assetType } = formData;
+    
+    if (!assetName || !assetDescription || !totalSupply || !pricePerShare || !assetType) {
+      setFormMessage('Please fill all fields');
+      return;
+    }
+
+    const totalSupplyNum = parseInt(totalSupply);
+    const pricePerShareNum = parseFloat(pricePerShare);
+
+    if (totalSupplyNum <= 0 || pricePerShareNum <= 0) {
+      setFormMessage('Total supply and price must be greater than 0');
+      return;
+    }
+
+    try {
+      setFormLoading(true);
+      setFormMessage('');
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // Convert price to wei (6 decimal places)
+      const priceInWei = Math.floor(pricePerShareNum * 1000000);
+
+      const factoryContract = new ethers.Contract(
+        RWA_ASSET_FACTORY_ADDRESS,
+        RWA_ASSET_FACTORY_ABI,
+        signer
+      );
+
+      console.log('Creating RWA asset with:', {
+        assetName,
+        assetDescription,
+        totalSupply: totalSupplyNum,
+        pricePerShare: priceInWei,
+        assetType
+      });
+
+      const tx = await factoryContract.createRWAAsset(
+        assetName,
+        assetDescription,
+        totalSupplyNum,
+        priceInWei,
+        assetType
+      );
+
+      setFormMessage('Transaction submitted. Waiting for confirmation...');
+      await tx.wait();
+
+      setFormMessage(`RWA Asset "${assetName}" created successfully!`);
+      
+      // Reset form after successful creation
+      setFormData({
+        assetName: '',
+        assetDescription: '',
+        totalSupply: '',
+        pricePerShare: '',
+        assetType: ''
+      });
+      
+      // Refresh assets list
+      handleRefresh();
+    } catch (error) {
+      console.error('Failed to create RWA asset:', error);
+      setFormMessage(`Failed to create asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   return (
@@ -171,6 +263,24 @@ export function RWAAssetApp() {
                 borderBottom: '2px solid rgba(229, 231, 235, 0.8)'
               }}>
                 <button
+                  onClick={() => setActiveTab('create')}
+                  style={{
+                    flex: 1,
+                    padding: '1rem 1.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '700',
+                    border: 'none',
+                    background: activeTab === 'create'
+                      ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                      : 'transparent',
+                    color: activeTab === 'create' ? 'white' : '#6b7280',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  🏭 Create Asset
+                </button>
+                <button
                   onClick={() => setActiveTab('assets')}
                   style={{
                     flex: 1,
@@ -206,24 +316,6 @@ export function RWAAssetApp() {
                 >
                   💰 Subscribe
                 </button>
-                <button
-                  onClick={() => setActiveTab('create')}
-                  style={{
-                    flex: 1,
-                    padding: '1rem 1.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '700',
-                    border: 'none',
-                    background: activeTab === 'create'
-                      ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                      : 'transparent',
-                    color: activeTab === 'create' ? 'white' : '#6b7280',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  🏭 Create Asset
-                </button>
               </div>
 
               {/* Tab Content */}
@@ -231,7 +323,16 @@ export function RWAAssetApp() {
                 padding: '1.5rem',
                 minHeight: '500px'
               }}>
-                {activeTab === 'assets' ? (
+                {activeTab === 'create' ? (
+                  <RWAAssetCreationForm 
+                    onAssetCreated={handleRefresh}
+                    formData={formData}
+                    onFormDataChange={handleFormInputChange}
+                    onCreateAsset={handleCreateAsset}
+                    loading={formLoading}
+                    message={formMessage}
+                  />
+                ) : activeTab === 'assets' ? (
                   <RWAAssetList
                     assets={assets}
                     loading={loading}
@@ -239,14 +340,12 @@ export function RWAAssetApp() {
                     selectedAsset={selectedAsset}
                     onRefresh={handleRefresh}
                   />
-                ) : activeTab === 'subscribe' ? (
+                ) : (
                   <RWAAssetSubscription
                     selectedAsset={selectedAsset}
                     userAddress={address!}
                     onSubscriptionComplete={handleRefresh}
                   />
-                ) : (
-                  <RWAAssetCreationForm onAssetCreated={handleRefresh} />
                 )}
               </div>
             </div>

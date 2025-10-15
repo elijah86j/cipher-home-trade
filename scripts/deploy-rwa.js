@@ -141,53 +141,27 @@ async function deployRWAAssets() {
     let rwaAssetFactoryAddress;
     let rwaAssetAddress = "0x0000000000000000000000000000000000000000"; // Will be created by factory
     
-    try {
-      // Try to read from Hardhat artifacts
-      const artifactPath = './artifacts/contracts/RWAAssetFactory.sol/RWAAssetFactory.json';
-      if (fs.existsSync(artifactPath)) {
-        const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
-        RWAAssetFactoryBytecode = artifact.bytecode;
-        console.log("✅ Using compiled bytecode from Hardhat artifacts");
-      } else {
-        throw new Error("Artifact not found");
-      }
-    } catch (error) {
-      console.log("⚠️  Could not load compiled bytecode, using simplified deployment...");
-      console.log("   Error:", error.message);
-      
-      // Use a simple contract deployment without FHE dependencies
-      const simpleFactoryABI = [
-        {
-          "inputs": [
-            {"internalType": "string", "name": "assetName", "type": "string"},
-            {"internalType": "string", "name": "assetDescription", "type": "string"},
-            {"internalType": "uint256", "name": "totalSupply", "type": "uint256"},
-            {"internalType": "uint256", "name": "pricePerShare", "type": "uint256"},
-            {"internalType": "string", "name": "assetType", "type": "string"}
-          ],
-          "name": "createRWAAsset",
-          "outputs": [{"internalType": "address", "name": "", "type": "address"}],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ];
-      
-      // Simple contract bytecode (minimal implementation without FHE)
-      const simpleFactoryBytecode = "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063a6f9dae11461003b578063f2fde38b14610057575b600080fd5b6100556004803603810190610050919061010b565b610073565b005b610071600480360381019061006c919061010b565b6100d6565b005b8073ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f193505050501580156100b8573d6000803e3d6000fd5b5050565b8073ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a28073ffffffffffffffffffffffffffffffffffffffff16600073ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a350565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101468261011b565b9050919050565b6101568161013b565b811461016157600080fd5b50565b6000813590506101738161014d565b92915050565b60006020828403121561018f5761018e610136565b5b600061019d84828501610164565b9150509291505056fea2646970667358221220";
-      
-      console.log("⏳ Creating contract address for demonstration...");
-      
-      // Generate a deterministic address for demonstration
-      const salt = ethers.keccak256(ethers.toUtf8Bytes("RWAAssetFactory" + Date.now()));
-      const factoryAddress = ethers.getCreate2Address(
-        "0x0000000000000000000000000000000000000000", // Deployer address
-        salt,
-        "0x" + "0".repeat(64) // Bytecode hash
-      );
-      
-      rwaAssetFactoryAddress = factoryAddress;
-      console.log("✅ Contract address generated for demonstration!");
+    // Load compiled bytecode from Hardhat artifacts
+    const artifactPath = './artifacts/contracts/RWAAssetFactory.sol/RWAAssetFactory.json';
+    if (!fs.existsSync(artifactPath)) {
+      throw new Error("RWAAssetFactory artifact not found. Please run 'npx hardhat compile' first.");
     }
+    
+    const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
+    RWAAssetFactoryBytecode = artifact.bytecode;
+    console.log("✅ Using compiled bytecode from Hardhat artifacts");
+    
+    // Deploy the actual contract
+    console.log("📦 Deploying RWAAssetFactory contract...");
+    const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
+    const rwaAssetFactory = await factory.deploy();
+    rwaAssetFactoryAddress = await rwaAssetFactory.getAddress();
+    
+    console.log("⏳ Waiting for deployment transaction to be mined...");
+    await rwaAssetFactory.waitForDeployment();
+    
+    console.log("✅ RWAAssetFactory deployed successfully!");
+    console.log("   Contract Address:", rwaAssetFactoryAddress);
     
     if (!rwaAssetFactoryAddress) {
       // Fallback: create a mock address for demonstration
@@ -233,8 +207,8 @@ export const DEPLOYMENT_INFO = {
     console.log("📝 Updated frontend configuration");
 
     // Get transaction details
-    const deploymentTx = null; // No actual deployment transaction
-    const transactionHash = "demo_transaction_hash_" + Date.now();
+    const deploymentTx = rwaAssetFactory.deploymentTransaction();
+    const transactionHash = deploymentTx ? deploymentTx.hash : "unknown";
     const blockNumber = await provider.getBlockNumber();
     
     // Save deployment info
@@ -319,14 +293,49 @@ export const DEPLOYMENT_INFO = {
       console.log(`   ${index + 1}. ${asset.name} - $${asset.pricePerShare}/share (${asset.totalSupply} shares)`);
     });
 
-    // Note: In a real deployment, you would call the factory contract to create these assets
-    // For now, we'll simulate the creation
-    console.log("\n⚠️  Note: In a real deployment, these assets would be created by calling:");
-    console.log("   factory.createRWAAsset(assetName, description, totalSupply, pricePerShare, assetType)");
+    // Create assets using the deployed factory contract
+    console.log("\n🏗️  Creating RWA assets using deployed factory contract...");
+    
+    const factoryContract = new ethers.Contract(rwaAssetFactoryAddress, artifact.abi, wallet);
+    const createdAssets = [];
+    
+    for (let i = 0; i < sampleAssets.length; i++) {
+      const asset = sampleAssets[i];
+      try {
+        console.log(`📦 Creating asset ${i + 1}/${sampleAssets.length}: ${asset.name}`);
+        
+        // Convert price to wei (6 decimal places)
+        const priceInWei = Math.floor(asset.pricePerShare * 1000000);
+        
+        const tx = await factoryContract.createRWAAsset(
+          asset.name,
+          asset.description,
+          asset.totalSupply,
+          priceInWei,
+          asset.assetType
+        );
+        
+        console.log(`   Transaction hash: ${tx.hash}`);
+        await tx.wait();
+        
+        // Get the created asset address
+        const assetAddress = await factoryContract.getRWAAsset(asset.name);
+        createdAssets.push({
+          ...asset,
+          contractAddress: assetAddress
+        });
+        
+        console.log(`   ✅ Asset created at: ${assetAddress}`);
+      } catch (error) {
+        console.log(`   ❌ Failed to create asset ${asset.name}: ${error.message}`);
+      }
+    }
+    
+    console.log(`\n🎉 Successfully created ${createdAssets.length}/${sampleAssets.length} RWA assets!`);
     
     // Save sample assets data for frontend
     const sampleAssetsData = {
-      assets: sampleAssets.map((asset, index) => ({
+      assets: createdAssets.map((asset, index) => ({
         id: index + 1,
         name: asset.name,
         description: asset.description,
@@ -335,8 +344,7 @@ export const DEPLOYMENT_INFO = {
         assetType: asset.assetType,
         availableShares: asset.totalSupply,
         totalValue: asset.totalSupply * asset.pricePerShare,
-        // Mock contract address (would be generated by factory in real deployment)
-        contractAddress: `0x${(index + 1).toString().padStart(40, '0')}`
+        contractAddress: asset.contractAddress
       }))
     };
 
