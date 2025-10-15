@@ -72,12 +72,8 @@ export function RWAAssetApp() {
         }
       } catch (error) {
         console.error('Failed to load assets from contract:', error);
+        setAssets([]); // Set empty array if contract fails
       }
-
-      // Fallback to sample data
-      const response = await fetch('/src/data/sample-assets.json');
-      const data = await response.json();
-      setAssets(data.assets);
     } catch (error) {
       console.error('Failed to load RWA assets:', error);
     } finally {

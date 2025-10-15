@@ -96,7 +96,18 @@ export function RWAAssetList({
           padding: '3rem',
           color: '#6b7280'
         }}>
-          {assets.length === 0 ? 'No RWA assets available' : 'No assets match your search'}
+          {assets.length === 0 ? (
+            <div>
+              <p style={{ fontSize: '1.125rem', marginBottom: '1rem' }}>
+                📊 No RWA assets available
+              </p>
+              <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
+                Assets will appear here once they are created on the blockchain
+              </p>
+            </div>
+          ) : (
+            'No assets match your search'
+          )}
         </div>
       ) : (
         <div style={{

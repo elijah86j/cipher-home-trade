@@ -1,10 +1,14 @@
 export interface RWAAsset {
+  id?: number;
   name: string;
   description: string;
   totalSupply: number;
   pricePerShare: number;
   assetType: string;
-  assetAddress: string;
+  availableShares?: number;
+  totalValue?: number;
+  contractAddress?: string;
+  assetAddress?: string;
 }
 
 export interface SubscriptionData {
