@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
-import { Header } from './Header';
+import Header from './Header';
 import { RWAAssetList } from './RWAAssetList';
 import { RWAAssetSubscription } from './RWAAssetSubscription';
 import { RWAAssetCreationForm } from './RWAAssetCreationForm';
