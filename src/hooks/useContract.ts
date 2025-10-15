@@ -1,5 +1,6 @@
-import { useReadContract, useWriteContract, useAccount } from 'wagmi';
+import { useReadContract, useWriteContract, useAccount, useSignTypedData } from 'wagmi';
 import { CipherHomeTradeABI } from '../lib/contract-abi';
+import { fheManager } from '../lib/fheUtils';
 
 // Contract address - this should be deployed to Sepolia testnet
 const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000'; // Replace with actual deployed address
@@ -157,5 +158,148 @@ export const useCreateUserProfile = () => {
     createProfile: createProfileWithParams,
     isLoading: isPending,
     error,
+  };
+};
+
+// FHE-encrypted property listing
+export const useListPropertyEncrypted = () => {
+  const { writeContractAsync: listProperty, isPending, error } = useWriteContract();
+  const { address } = useAccount();
+
+  const listPropertyWithEncryption = async (params: {
+    name: string;
+    description: string;
+    location: string;
+    price: number;
+    area: number;
+    bedrooms: number;
+    bathrooms: number;
+  }) => {
+    if (!address) throw new Error('Wallet not connected');
+    
+    // Initialize FHE manager
+    await fheManager.initialize();
+    
+    // Encrypt property data
+    const { handles, inputProof } = await fheManager.encryptPropertyData(
+      CONTRACT_ADDRESS,
+      address,
+      params.price,
+      params.area,
+      params.bedrooms,
+      params.bathrooms
+    );
+
+    return listProperty({
+      address: CONTRACT_ADDRESS,
+      abi: CipherHomeTradeABI,
+      functionName: 'listProperty',
+      args: [
+        params.name,
+        params.description,
+        params.location,
+        handles[0], // encrypted price
+        handles[1], // encrypted area
+        handles[2], // encrypted bedrooms
+        handles[3], // encrypted bathrooms
+        inputProof
+      ],
+    });
+  };
+
+  return {
+    listProperty: listPropertyWithEncryption,
+    isLoading: isPending,
+    error,
+  };
+};
+
+// FHE-encrypted bid placement
+export const usePlaceBidEncrypted = () => {
+  const { writeContractAsync: placeBid, isPending, error } = useWriteContract();
+  const { address } = useAccount();
+
+  const placeBidWithEncryption = async (params: {
+    propertyId: number;
+    amount: number;
+  }) => {
+    if (!address) throw new Error('Wallet not connected');
+    
+    // Initialize FHE manager
+    await fheManager.initialize();
+    
+    // Encrypt bid amount
+    const { handle, inputProof } = await fheManager.encryptBidAmount(
+      CONTRACT_ADDRESS,
+      address,
+      params.amount
+    );
+
+    return placeBid({
+      address: CONTRACT_ADDRESS,
+      abi: CipherHomeTradeABI,
+      functionName: 'placeBid',
+      args: [
+        BigInt(params.propertyId),
+        handle, // encrypted amount
+        inputProof
+      ],
+    });
+  };
+
+  return {
+    placeBid: placeBidWithEncryption,
+    isLoading: isPending,
+    error,
+  };
+};
+
+// FHE decryption for property data
+export const useDecryptPropertyData = () => {
+  const { address } = useAccount();
+  const { signTypedDataAsync } = useSignTypedData();
+
+  const decryptPropertyData = async (handles: string[]) => {
+    if (!address) throw new Error('Wallet not connected');
+    if (!signTypedDataAsync) throw new Error('Signer not available');
+    
+    // Initialize FHE manager
+    await fheManager.initialize();
+    
+    return fheManager.decryptPropertyData(
+      handles,
+      CONTRACT_ADDRESS,
+      address,
+      signTypedDataAsync
+    );
+  };
+
+  return {
+    decryptPropertyData,
+  };
+};
+
+// FHE decryption for bid data
+export const useDecryptBidData = () => {
+  const { address } = useAccount();
+  const { signTypedDataAsync } = useSignTypedData();
+
+  const decryptBidAmount = async (handle: string) => {
+    if (!address) throw new Error('Wallet not connected');
+    if (!signTypedDataAsync) throw new Error('Signer not available');
+    
+    // Initialize FHE manager
+    await fheManager.initialize();
+    
+    return fheManager.decryptBidAmount(
+      handle,
+      CONTRACT_ADDRESS,
+      address,
+      signTypedDataAsync
+    );
+  };
+
+  return {
+    decryptBidAmount,
   };
 };

@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config, chains } from './lib/wallet-config';
-import Index from "./pages/Index";
+import { RWAAssetApp } from "./components/RWAAssetApp";
 import NotFound from "./pages/NotFound";
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -22,7 +22,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<RWAAssetApp />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

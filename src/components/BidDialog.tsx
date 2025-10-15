@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { usePlaceBid } from "@/hooks/useContract";
+import { usePlaceBidEncrypted } from "@/hooks/useContract";
 import { useAccount } from "wagmi";
 import { Lock, Shield, TrendingUp, Wallet, Clock, AlertTriangle } from "lucide-react";
 
@@ -30,7 +30,7 @@ const BidDialog = ({ property, children }: BidDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<"bid" | "confirm" | "success">("bid");
   const { toast } = useToast();
-  const { placeBid, isLoading: isPlacingBid, error } = usePlaceBid();
+  const { placeBid, isLoading: isPlacingBid, error } = usePlaceBidEncrypted();
   const { address, isConnected } = useAccount();
 
   const tokenPrice = parseFloat(property.price.replace("$", "").replace(",", ""));
@@ -62,20 +62,21 @@ const BidDialog = ({ property, children }: BidDialogProps) => {
     setIsSubmitting(true);
     
     try {
-      // For now, we'll simulate the encrypted bid submission
-      // In a real implementation, this would use FHE encryption
       const bidAmountNum = parseFloat(bidAmount);
       
-      // Simulate blockchain transaction
-      setTimeout(() => {
-        setStep("confirm");
-        setIsSubmitting(false);
-      }, 2000);
+      // Use FHE-encrypted bid submission
+      await placeBid({
+        propertyId: parseInt(property.id),
+        amount: bidAmountNum
+      });
+      
+      setStep("confirm");
+      setIsSubmitting(false);
     } catch (err) {
       console.error("Error placing bid:", err);
       toast({
         title: "Transaction Failed",
-        description: "Failed to place bid. Please try again.",
+        description: "Failed to place encrypted bid. Please try again.",
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -86,17 +87,15 @@ const BidDialog = ({ property, children }: BidDialogProps) => {
     setIsSubmitting(true);
     
     try {
-      // In a real implementation, this would call the actual contract
-      // For now, we'll simulate the transaction
-      setTimeout(() => {
-        setStep("success");
-        setIsSubmitting(false);
-        
-        toast({
-          title: property.status === "encrypted" ? "Encrypted Bid Submitted" : "Bid Placed Successfully",
-          description: `Your bid for ${tokenQuantity} tokens has been ${property.status === "encrypted" ? "encrypted and" : ""} submitted.`,
-        });
-      }, 3000);
+      // The bid has already been submitted in handleSubmitBid
+      // This is just for UI flow confirmation
+      setStep("success");
+      setIsSubmitting(false);
+      
+      toast({
+        title: property.status === "encrypted" ? "Encrypted Bid Submitted" : "Bid Placed Successfully",
+        description: `Your bid for ${tokenQuantity} tokens has been ${property.status === "encrypted" ? "encrypted and" : ""} submitted.`,
+      });
     } catch (err) {
       console.error("Error confirming bid:", err);
       toast({
