@@ -321,5 +321,4 @@ export const RWA_ASSET_FACTORY_ADDRESS = '0x67cDbFa55d54f452e40072C61FE9c9396FE8
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
-};
+] as const;
