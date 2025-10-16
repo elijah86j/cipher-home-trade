@@ -44,13 +44,10 @@ export function useZamaInstance() {
         setError(null);
         
         console.log('📦 Initializing FHE SDK...');
-        console.log('🔍 ZamaSDK object:', ZamaSDK);
-        console.log('🔍 Available methods:', Object.keys(ZamaSDK));
-        
-        await ZamaSDK.initSDK();
+        await initSDK();
         
         console.log('🏗️ Creating FHE instance...');
-        const zamaInstance = await ZamaSDK.createInstance(ZamaSDK.SepoliaConfig);
+        const zamaInstance = await createInstance(SepoliaConfig);
 
         if (mounted) {
           setInstance(zamaInstance);

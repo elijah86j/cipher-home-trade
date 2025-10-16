@@ -1,5 +1,5 @@
 // RWA Asset Factory Configuration
-export const RWA_ASSET_FACTORY_ADDRESS = '0x057F53746D8ddc95E25FF576a7E4093983C99c35';
+export const RWA_ASSET_FACTORY_ADDRESS = '0x67cDbFa55d54f452e40072C61FE9c9396FE86afF';
 export const RWA_ASSET_FACTORY_ABI = [
   {
     "inputs": [
@@ -102,34 +102,6 @@ export const RWA_ASSET_FACTORY_ABI = [
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "encryptedShares",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "inputProof",
-        "type": "bytes"
-      }
-    ],
-    "name": "subscribeToAssetEncrypted",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   }
 ];
 
@@ -139,10 +111,10 @@ export const SEPOLIA_RPC_URL = 'https://1rpc.io/sepolia';
 
 // Deployment Info
 export const DEPLOYMENT_INFO = {
-  contractAddress: '0x057F53746D8ddc95E25FF576a7E4093983C99c35',
+  contractAddress: '0x67cDbFa55d54f452e40072C61FE9c9396FE86afF',
   network: 'sepolia',
   chainId: 11155111,
   deployer: '0x912aF42009e089979bA3A304b8A7623AB11e090f',
-  timestamp: '2025-10-16T06:34:38.935Z',
+  timestamp: '2025-10-16T06:44:39.017Z',
   status: 'deployed'
 };
