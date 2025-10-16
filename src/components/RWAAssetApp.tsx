@@ -59,7 +59,7 @@ export function RWAAssetApp() {
           const assetDetails = await Promise.all(
             assetNames.map(async (name: string) => {
               try {
-                const [assetName, description, totalSupply, pricePerShare, assetType, assetAddress] = 
+                const [assetName, description, assetType, totalSupply, availableShares, pricePerShare] = 
                   await factory.getAssetInfo(name);
                 
                 return {
@@ -69,9 +69,9 @@ export function RWAAssetApp() {
                   totalSupply: Number(totalSupply),
                   pricePerShare: Number(pricePerShare), // Simple contract stores price directly
                   assetType,
-                  availableShares: Number(totalSupply),
+                  availableShares: Number(availableShares),
                   totalValue: Number(totalSupply) * Number(pricePerShare),
-                  contractAddress: assetAddress
+                  contractAddress: await factory.getRWAAsset(name) // Get asset address separately
                 };
               } catch (assetError) {
                 console.error(`Failed to load asset ${name}:`, assetError);
