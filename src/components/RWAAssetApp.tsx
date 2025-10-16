@@ -4,6 +4,8 @@ import { ethers } from 'ethers';
 import Header from './Header';
 import { RWAAssetList } from './RWAAssetList';
 import { RWAAssetSubscription } from './RWAAssetSubscription';
+import SimpleRWAAssetSubscription from './SimpleRWAAssetSubscription';
+import { isEncryptionEnabled } from '../config/app-config';
 import { RWAAssetCreationForm } from './RWAAssetCreationForm';
 import { BalanceDisplay } from './BalanceDisplay';
 import type { RWAAsset } from '../types';
@@ -368,11 +370,18 @@ export function RWAAssetApp() {
                     onRefresh={handleRefresh}
                   />
                 ) : (
-                  <RWAAssetSubscription
-                    selectedAsset={selectedAsset}
-                    userAddress={address!}
-                    onSubscriptionComplete={handleRefresh}
-                  />
+                  isEncryptionEnabled() ? (
+                    <RWAAssetSubscription
+                      selectedAsset={selectedAsset}
+                      userAddress={address!}
+                      onSubscriptionComplete={handleRefresh}
+                    />
+                  ) : (
+                    <SimpleRWAAssetSubscription
+                      selectedAsset={selectedAsset}
+                      onSubscriptionSuccess={handleRefresh}
+                    />
+                  )
                 )}
               </div>
             </div>

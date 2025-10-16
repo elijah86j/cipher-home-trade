@@ -1,5 +1,5 @@
 // RWA Asset Factory Configuration
-export const RWA_ASSET_FACTORY_ADDRESS = '0xE2948b495f43B15F02A3d90C877e3772fE634179';
+export const RWA_ASSET_FACTORY_ADDRESS = '0x6ff95d0C0b6a99453f3b8e99CA3D157F3ab0AE71';
 export const RWA_ASSET_FACTORY_ABI = [
   {
     "inputs": [

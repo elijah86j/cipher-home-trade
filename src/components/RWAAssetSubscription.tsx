@@ -329,8 +329,9 @@ export function RWAAssetSubscription({
               borderRadius: '6px',
               fontSize: '1rem',
               boxSizing: 'border-box',
-              color: '#374151',
-              backgroundColor: '#ffffff'
+              color: '#111827',
+              backgroundColor: '#ffffff',
+              outline: 'none'
             }}
           />
         </div>
