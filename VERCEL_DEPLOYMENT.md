@@ -1,159 +1,198 @@
-# Vercel Deployment Guide for Cipher Home Trade
+# Vercel Deployment Guide - FHE-Encrypted RWA Platform
 
-## Prerequisites
+This guide covers deploying the Cipher Home Trade FHE-encrypted RWA asset platform to Vercel.
 
-1. **Vercel Account**: Sign up at [vercel.com](https://vercel.com)
-2. **GitHub Repository**: Ensure your code is pushed to GitHub
-3. **Environment Variables**: Prepare the required environment variables
+## 🚀 Deployment Overview
 
-## Step-by-Step Deployment Process
+The platform consists of:
+- **Frontend**: React + TypeScript application
+- **Smart Contracts**: FHE-encrypted RWA asset contracts on Sepolia
+- **FHE Integration**: Zama FHEVM for confidential transactions
 
-### Step 1: Connect to Vercel
+## 📋 Prerequisites
 
-1. Go to [vercel.com](https://vercel.com) and sign in
-2. Click "New Project" or "Import Project"
-3. Connect your GitHub account if not already connected
-4. Select the repository: `elijah86j/cipher-home-trade`
+- Vercel account
+- GitHub repository access
+- Environment variables configured
+- Sepolia testnet contracts deployed
 
-### Step 2: Configure Project Settings
+## 🔧 Environment Variables
 
-1. **Project Name**: `cipher-home-trade`
-2. **Framework Preset**: Select "Vite"
-3. **Root Directory**: Leave as default (`.`)
-4. **Build Command**: `npm run build`
-5. **Output Directory**: `dist`
-6. **Install Command**: `npm install`
-
-### Step 3: Environment Variables Configuration
-
-Add the following environment variables in Vercel dashboard:
-
-#### Required Environment Variables:
+Configure these environment variables in Vercel:
 
 ```env
-# Chain Configuration
-NEXT_PUBLIC_CHAIN_ID=11155111
-NEXT_PUBLIC_RPC_URL=YOUR_RPC_URL_HERE
+# Network Configuration
+NEXT_PUBLIC_SEPOLIA_RPC_URL=https://1rpc.io/sepolia
+NEXT_PUBLIC_ETHERSCAN_API_KEY=your_etherscan_api_key
 
-# Wallet Connect Configuration
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=YOUR_WALLET_CONNECT_PROJECT_ID_HERE
+# WalletConnect
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 
-# Infura Configuration (Optional)
-NEXT_PUBLIC_INFURA_API_KEY=YOUR_INFURA_API_KEY_HERE
-NEXT_PUBLIC_RPC_URL=YOUR_ALTERNATIVE_RPC_URL_HERE
+# Contract Addresses
+NEXT_PUBLIC_RWA_ASSET_FACTORY_ADDRESS=0xE2948b495f43B15F02A3d90C877e3772fE634179
 ```
 
-#### How to Add Environment Variables:
+## 🏗️ Deployment Steps
 
-1. In the Vercel project dashboard, go to "Settings"
-2. Click on "Environment Variables"
-3. Add each variable with the following settings:
-   - **Name**: The environment variable name (e.g., `NEXT_PUBLIC_CHAIN_ID`)
-   - **Value**: The corresponding value (e.g., `11155111`)
-   - **Environment**: Select "Production", "Preview", and "Development"
+### 1. Connect Repository
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "New Project"
+3. Import your GitHub repository
+4. Select the project root directory
 
-### Step 4: Build Configuration
+### 2. Configure Build Settings
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install"
+}
+```
 
-1. **Build Command**: `npm run build`
-2. **Output Directory**: `dist`
-3. **Install Command**: `npm install`
-4. **Node.js Version**: 18.x (recommended)
+### 3. Set Environment Variables
+In Vercel dashboard:
+- Go to Project Settings → Environment Variables
+- Add all required environment variables
+- Ensure they're available for Production, Preview, and Development
 
-### Step 5: Domain Configuration (Optional)
+### 4. Deploy
+1. Click "Deploy" in Vercel dashboard
+2. Wait for build to complete
+3. Access your deployed application
 
-1. Go to "Domains" in your project settings
-2. Add a custom domain if desired
-3. Configure DNS settings as instructed by Vercel
+## 🔐 FHE Configuration
 
-### Step 6: Deploy
+### Required Headers
+The application requires specific headers for FHE SDK:
 
-1. Click "Deploy" button
-2. Wait for the build process to complete
-3. Your application will be available at the provided Vercel URL
+```javascript
+// vercel.json
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Cross-Origin-Embedder-Policy", 
+          "value": "require-corp"
+        }
+      ]
+    }
+  ]
+}
+```
 
-## Post-Deployment Configuration
+### Vite Configuration
+```typescript
+// vite.config.ts
+export default defineConfig({
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
+  }
+})
+```
 
-### Step 7: Verify Deployment
+## 📱 Frontend Features
 
-1. **Check Application**: Visit the deployed URL
-2. **Test Wallet Connection**: Ensure RainbowKit wallet connection works
-3. **Test Network**: Verify Sepolia testnet connection
-4. **Check Console**: Monitor browser console for any errors
+### FHE-Encrypted Asset Subscription
+- Private share amount encryption
+- Confidential transaction submission
+- Zero-knowledge portfolio management
 
-### Step 8: Update Contract Address (When Available)
+### Supported Asset Types
+- Commercial Real Estate
+- Residential Properties  
+- Retail Spaces
+- Hospitality Assets
 
-Once the smart contract is deployed to Sepolia:
+## 🔗 Contract Integration
 
-1. Go to Vercel project settings
-2. Add new environment variable:
-   - **Name**: `NEXT_PUBLIC_CONTRACT_ADDRESS`
-   - **Value**: The deployed contract address
-3. Redeploy the application
+### Deployed Contracts
+- **RWAAssetFactory**: `0xE2948b495f43B15F02A3d90C877e3772fE634179`
+- **Network**: Ethereum Sepolia Testnet
+- **FHE Support**: Full homomorphic encryption enabled
 
-## Troubleshooting
+### Contract Functions
+- `createRWAAsset()`: Create new RWA assets
+- `subscribeToAssetEncrypted()`: FHE-encrypted subscriptions
+- `getAllAssetNames()`: List available assets
+- `getAssetInfo()`: Get asset details
 
-### Common Issues:
+## 🛠️ Troubleshooting
 
-1. **Build Failures**:
-   - Check Node.js version (use 18.x)
-   - Verify all dependencies are installed
-   - Check for TypeScript errors
+### Common Issues
 
-2. **Environment Variables Not Working**:
-   - Ensure variables start with `NEXT_PUBLIC_` for client-side access
-   - Redeploy after adding new variables
-   - Check variable names match exactly
+1. **FHE SDK Loading Issues**
+   - Ensure COOP/COEP headers are set
+   - Check browser console for errors
+   - Verify network connectivity
 
-3. **Wallet Connection Issues**:
-   - Verify WalletConnect Project ID is correct
-   - Check RPC URL is accessible
-   - Ensure network configuration matches Sepolia
-
-4. **Network Issues**:
-   - Verify Sepolia testnet configuration
+2. **Contract Connection Issues**
+   - Verify contract addresses
    - Check RPC endpoint availability
-   - Ensure proper chain ID (11155111)
+   - Ensure wallet is connected to Sepolia
 
-### Performance Optimization:
+3. **Build Failures**
+   - Check environment variables
+   - Verify Node.js version (18+)
+   - Review build logs
 
-1. **Enable Edge Functions** (if needed)
-2. **Configure Caching** for static assets
-3. **Enable Compression** for better loading times
-4. **Monitor Performance** using Vercel Analytics
+### Debug Steps
+1. Check browser console for errors
+2. Verify environment variables
+3. Test contract connectivity
+4. Review Vercel build logs
 
-## Security Considerations
+## 📊 Monitoring
 
-1. **Environment Variables**: Never commit sensitive keys to repository
-2. **API Keys**: Use Vercel's environment variable system
-3. **CORS**: Configure proper CORS settings if needed
-4. **Rate Limiting**: Implement rate limiting for API calls
+### Analytics
+- Monitor user interactions
+- Track FHE encryption usage
+- Analyze transaction patterns
 
-## Monitoring and Analytics
+### Performance
+- Monitor page load times
+- Track FHE SDK initialization
+- Measure transaction success rates
 
-1. **Vercel Analytics**: Enable for performance monitoring
-2. **Error Tracking**: Set up error monitoring
-3. **Uptime Monitoring**: Monitor application availability
-4. **Performance Metrics**: Track Core Web Vitals
+## 🔄 Updates
 
-## Deployment URLs
+### Contract Updates
+1. Deploy new contracts to Sepolia
+2. Update contract addresses in environment
+3. Redeploy frontend application
 
-- **Production**: `https://cipher-home-trade.vercel.app`
-- **Preview**: `https://cipher-home-trade-git-main-elijah86j.vercel.app`
-- **Development**: Available after first deployment
+### Frontend Updates
+1. Push changes to GitHub
+2. Vercel automatically redeploys
+3. Test new features
 
-## Support
+## 📈 Production Checklist
+
+- [ ] Environment variables configured
+- [ ] Contract addresses updated
+- [ ] FHE headers properly set
+- [ ] WalletConnect project ID set
+- [ ] RPC endpoints verified
+- [ ] Build successful
+- [ ] FHE encryption working
+- [ ] Asset subscription functional
+
+## 🆘 Support
 
 For deployment issues:
-1. Check Vercel documentation
-2. Review build logs in Vercel dashboard
-3. Check GitHub repository for any issues
-4. Contact Vercel support if needed
+1. Check Vercel build logs
+2. Review environment variables
+3. Test locally first
+4. Contact support if needed
 
-## Next Steps
+---
 
-After successful deployment:
-1. Test all functionality
-2. Deploy smart contract to Sepolia
-3. Update contract address in environment variables
-4. Configure custom domain (optional)
-5. Set up monitoring and analytics
+**Deployed with ❤️ on Vercel using Zama FHEVM technology**
