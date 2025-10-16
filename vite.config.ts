@@ -7,7 +7,8 @@ export default defineConfig({
     host: "::",
     port: 8080,
     headers: {
-      // Only set COOP for FHE SDK, but allow Base Account SDK to work
+      // Required headers for FHE SDK threads support
+      'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp'
     }
   },

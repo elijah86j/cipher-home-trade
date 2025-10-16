@@ -49,7 +49,7 @@ export function RWAAssetApp() {
         // Skip asset count check since it's not essential and causes ABI issues
         // We'll get the count from getAllAssetNames().length instead
 
-        const assetNames = await factory.getAllAssetNames();
+        const assetNames = await factory.getAllAssetNames.staticCall();
         console.log('📝 Asset names from contract:', assetNames);
         console.log('✅ Successfully loaded', assetNames.length, 'assets from contract');
         
