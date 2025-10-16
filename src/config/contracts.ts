@@ -1,5 +1,5 @@
 // RWA Asset Factory Configuration
-export const RWA_ASSET_FACTORY_ADDRESS = '0x2bE8AB1dcC952C4d8A2bDE41691F9B672294e020';
+export const RWA_ASSET_FACTORY_ADDRESS = '0xcc5B4900676D6bE85867003C95277282489c42a2';
 export const RWA_ASSET_FACTORY_ABI = [
   {
     "inputs": [
@@ -111,10 +111,10 @@ export const SEPOLIA_RPC_URL = 'https://1rpc.io/sepolia';
 
 // Deployment Info
 export const DEPLOYMENT_INFO = {
-  contractAddress: '0x2bE8AB1dcC952C4d8A2bDE41691F9B672294e020',
+  contractAddress: '0xcc5B4900676D6bE85867003C95277282489c42a2',
   network: 'sepolia',
   chainId: 11155111,
   deployer: '0x912aF42009e089979bA3A304b8A7623AB11e090f',
-  timestamp: '2025-10-16T07:33:29.211Z',
+  timestamp: '2025-10-16T07:39:21.108Z',
   status: 'deployed'
 };

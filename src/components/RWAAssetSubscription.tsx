@@ -116,21 +116,18 @@ export function RWAAssetSubscription({
           signer
         );
 
-        // Use correct FHE handle conversion (based on project experience)
-        console.log('🔄 Converting FHE handles...');
-        const convertedHandles = encryptedInput.handles.map(convertHex);
-        console.log('✅ Converted handles:', convertedHandles);
+        // Use direct handles like StockRWA project (no conversion needed)
+        console.log('🔄 Using FHE handles directly...');
+        console.log('✅ Raw handles:', encryptedInput.handles);
         
-        // Use convertHex for inputProof like cipher-policy-hub
-        const proof = convertHex(encryptedInput.inputProof);
-        console.log('🔐 Input proof length:', proof.length);
+        console.log('🔐 Input proof length:', encryptedInput.inputProof.length);
 
         console.log('📝 Calling encrypted subscription through factory contract...');
         const tx = await factoryContract.subscribeToAssetEncrypted(
           selectedAsset.name,
           userAddress,
-          convertedHandles[0],
-          proof
+          encryptedInput.handles[0],  // 直接使用原始 handle
+          encryptedInput.inputProof    // 直接使用原始 proof
         );
         
         console.log('📋 Transaction submitted:', tx.hash);
