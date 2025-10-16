@@ -6,6 +6,10 @@ export default defineConfig({
   server: {
     host: "::",
     port: 8080,
+    headers: {
+      // Only set COOP for FHE SDK, but allow Base Account SDK to work
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
   },
   plugins: [react()],
   resolve: {
@@ -14,11 +18,11 @@ export default defineConfig({
     },
   },
   define: {
-    global: 'globalThis',
+    global: 'globalThis', // Critical: solve FHE SDK global undefined issue
   },
   optimizeDeps: {
     exclude: ['valtio/vanilla', 'valtio'],
-    include: ['@zama-fhe/relayer-sdk/bundle']
+    include: ['@zama-fhe/relayer-sdk/bundle'] // Pre-build FHE SDK
   },
   build: {
     rollupOptions: {

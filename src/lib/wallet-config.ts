@@ -3,7 +3,7 @@ import { sepolia } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
   appName: 'Cipher Home Trade',
-  projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || 'YOUR_WALLET_CONNECT_PROJECT_ID_HERE',
+  projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || 'demo-project-id-for-development',
   chains: [sepolia],
   ssr: false,
 });

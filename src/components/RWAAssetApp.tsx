@@ -44,35 +44,66 @@ export function RWAAssetApp() {
           provider
         );
 
+        console.log('🔍 Loading assets from contract:', RWA_ASSET_FACTORY_ADDRESS);
+        
+        // Skip asset count check since it's not essential and causes ABI issues
+        // We'll get the count from getAllAssetNames().length instead
+
         const assetNames = await factory.getAllAssetNames();
-        console.log('Asset names from contract:', assetNames);
+        console.log('📝 Asset names from contract:', assetNames);
+        console.log('✅ Successfully loaded', assetNames.length, 'assets from contract');
         
         if (assetNames.length > 0) {
           const assetDetails = await Promise.all(
             assetNames.map(async (name: string) => {
-              const [assetName, description, totalSupply, pricePerShare, assetType, assetAddress] = 
-                await factory.getAssetInfo(name);
-              
-              return {
-                id: assetNames.indexOf(name) + 1,
-                name: assetName,
-                description,
-                totalSupply: Number(totalSupply),
-                pricePerShare: Number(pricePerShare) / 1000000, // Convert from wei
-                assetType,
-                availableShares: Number(totalSupply),
-                totalValue: Number(totalSupply) * (Number(pricePerShare) / 1000000),
-                contractAddress: assetAddress
-              };
+              try {
+                const [assetName, description, totalSupply, pricePerShare, assetType, assetAddress] = 
+                  await factory.getAssetInfo(name);
+                
+                return {
+                  id: assetNames.indexOf(name) + 1,
+                  name: assetName,
+                  description,
+                  totalSupply: Number(totalSupply),
+                  pricePerShare: Number(pricePerShare) / 1000000, // Convert from wei
+                  assetType,
+                  availableShares: Number(totalSupply),
+                  totalValue: Number(totalSupply) * (Number(pricePerShare) / 1000000),
+                  contractAddress: assetAddress
+                };
+              } catch (assetError) {
+                console.error(`Failed to load asset ${name}:`, assetError);
+                return null;
+              }
             })
           );
 
-          setAssets(assetDetails);
+          // Filter out null values
+          const validAssets = assetDetails.filter(asset => asset !== null);
+          console.log('Loaded assets:', validAssets);
+          setAssets(validAssets);
+          return;
+        } else {
+          console.log('No assets found in contract');
+          setAssets([]);
           return;
         }
       } catch (error) {
         console.error('Failed to load assets from contract:', error);
-        setAssets([]); // Set empty array if contract fails
+        
+        // Try to load from sample data as fallback
+        try {
+          const sampleData = await import('../data/sample-assets.json');
+          if (sampleData.assets && sampleData.assets.length > 0) {
+            console.log('🔄 Loading sample assets as fallback (contract failed)');
+            setAssets(sampleData.assets);
+            return;
+          }
+        } catch (sampleError) {
+          console.log('❌ No sample data available:', sampleError);
+        }
+        
+        setAssets([]); // Set empty array if everything fails
       }
     } catch (error) {
       console.error('Failed to load RWA assets:', error);

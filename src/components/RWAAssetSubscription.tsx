@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
-import { useZamaInstance } from '../hooks/useZamaInstance';
+import { useZamaInstance, convertHex } from '../hooks/useZamaInstance';
 import { useEthersSigner } from '../hooks/useEthersSigner';
 import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/contracts';
 import type { RWAAsset } from '../types';
@@ -40,6 +40,13 @@ export function RWAAssetSubscription({
       return;
     }
 
+    console.log('🚀 Starting subscription process...');
+    console.log('Asset:', selectedAsset.name);
+    console.log('Shares:', sharesNum);
+    console.log('Encryption enabled:', useEncryption);
+    console.log('Instance available:', !!instance);
+    console.log('Signer available:', !!signerPromise);
+
     setIsSubmitting(true);
     setMessage('');
 
@@ -47,13 +54,29 @@ export function RWAAssetSubscription({
       const signer = await signerPromise;
       
       if (useEncryption) {
-        // FHE encrypted subscription
+        // FHE encrypted subscription - use the specific asset contract address
+        const assetContractAddress = selectedAsset.contractAddress || selectedAsset.assetAddress;
+        console.log('🔐 FHE encryption for asset:', selectedAsset.name);
+        console.log('📍 Asset contract address:', assetContractAddress);
+        
+        if (!assetContractAddress || assetContractAddress === '0x0000000000000000000000000000000000000000') {
+          throw new Error('Invalid asset contract address for FHE encryption');
+        }
+        
+        console.log('🔒 Creating encrypted input...');
         const input = instance.createEncryptedInput(
-          selectedAsset.assetAddress,
+          assetContractAddress,
           userAddress
         );
-        input.add64(BigInt(sharesNum));
+        
+        // Use BigInt for large values (based on project experience)
+        const sharesBigInt = BigInt(sharesNum);
+        console.log('📊 Adding shares to encrypted input:', sharesBigInt.toString());
+        input.add64(sharesBigInt);
+        
+        console.log('🔐 Encrypting input...');
         const encryptedInput = await input.encrypt();
+        console.log('✅ Encryption successful, handles:', encryptedInput.handles.length);
 
         // Call encrypted subscription function
         const factoryContract = new ethers.Contract(
@@ -62,30 +85,48 @@ export function RWAAssetSubscription({
           signer
         );
 
+        // Use correct FHE handle conversion (based on project experience)
+        console.log('🔄 Converting FHE handles...');
+        const convertedHandles = encryptedInput.handles.map(convertHex);
+        console.log('✅ Converted handles:', convertedHandles);
+        
+        const proof = `0x${Array.from(encryptedInput.inputProof)
+          .map(b => b.toString(16).padStart(2, '0')).join('')}`;
+        console.log('🔐 Input proof length:', proof.length);
+
+        console.log('📝 Calling encrypted subscription contract...');
         const tx = await factoryContract.subscribeToAssetEncrypted(
           selectedAsset.name,
           userAddress,
-          encryptedInput.handles[0],
-          encryptedInput.inputProof
+          convertedHandles[0],
+          proof
         );
+        
+        console.log('📋 Transaction submitted:', tx.hash);
         
         await tx.wait();
         setMessage('Encrypted subscription successful!');
       } else {
         // Regular subscription
+        console.log('💰 Regular subscription for asset:', selectedAsset.name);
+        console.log('📊 Shares:', sharesNum);
+        
         const factoryContract = new ethers.Contract(
           RWA_ASSET_FACTORY_ADDRESS,
           RWA_ASSET_FACTORY_ABI,
           signer
         );
 
+        console.log('📝 Calling regular subscription contract...');
         const tx = await factoryContract.subscribeToAsset(
           selectedAsset.name,
           userAddress,
           sharesNum
         );
         
+        console.log('📋 Transaction submitted:', tx.hash);
         await tx.wait();
+        console.log('✅ Subscription transaction confirmed');
         setMessage('Subscription successful!');
       }
 
