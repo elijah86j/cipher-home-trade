@@ -69,10 +69,9 @@ export function RWAAssetSubscription({
           userAddress
         );
         
-        // Use BigInt for large values (based on project experience)
-        const sharesBigInt = BigInt(sharesNum);
-        console.log('📊 Adding shares to encrypted input:', sharesBigInt.toString());
-        input.add64(sharesBigInt);
+        // Use correct data type for externalEuint64 (like cipher-policy-hub)
+        console.log('📊 Adding shares to encrypted input:', sharesNum);
+        input.add64(BigInt(sharesNum));
         
         console.log('🔐 Encrypting input...');
         const encryptedInput = await input.encrypt();
@@ -90,8 +89,8 @@ export function RWAAssetSubscription({
         const convertedHandles = encryptedInput.handles.map(convertHex);
         console.log('✅ Converted handles:', convertedHandles);
         
-        const proof = `0x${Array.from(encryptedInput.inputProof)
-          .map(b => b.toString(16).padStart(2, '0')).join('')}`;
+        // Use convertHex for inputProof like cipher-policy-hub
+        const proof = convertHex(encryptedInput.inputProof);
         console.log('🔐 Input proof length:', proof.length);
 
         console.log('📝 Calling encrypted subscription contract...');
