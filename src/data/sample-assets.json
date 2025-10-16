@@ -9,7 +9,7 @@
       "assetType": "Commercial Real Estate",
       "availableShares": 1000000,
       "totalValue": 100000000,
-      "contractAddress": "0xC20399f994aCe25f773fD96B4a36FdEFa99b48a3"
+      "contractAddress": "0x423EaF86d1910FE406C897d0b9BCbFF24B2a354E"
     },
     {
       "id": 2,
@@ -20,7 +20,7 @@
       "assetType": "Commercial Real Estate",
       "availableShares": 500000,
       "totalValue": 125000000,
-      "contractAddress": "0xf36CAB54B379f0131121b2495Da91E7bd11f2123"
+      "contractAddress": "0x5E903a5fd7F0419B689109923F311467d5195Cf1"
     },
     {
       "id": 3,
@@ -31,7 +31,7 @@
       "assetType": "Residential Real Estate",
       "availableShares": 750000,
       "totalValue": 112500000,
-      "contractAddress": "0x9e3748e3f3026596f40d18a676de9B895d19e82a"
+      "contractAddress": "0x318CC248519e974ab6FBf03A566751dF49BEc703"
     },
     {
       "id": 4,
@@ -42,7 +42,7 @@
       "assetType": "Retail Real Estate",
       "availableShares": 800000,
       "totalValue": 64000000,
-      "contractAddress": "0x2d4C357284d32C589E80730f9F923e67839f8854"
+      "contractAddress": "0xaC9b1f8Be2dcF4AF540d5D48231566c1B25e37e2"
     },
     {
       "id": 5,
@@ -53,7 +53,7 @@
       "assetType": "Hospitality Real Estate",
       "availableShares": 600000,
       "totalValue": 120000000,
-      "contractAddress": "0xb0754671665AFfE5D8546b03F8Cf299390a5bB01"
+      "contractAddress": "0xf77318C4E0eD9E6aF911E3B5a2fDc1017035A34b"
     }
   ]
 }
