@@ -1,67 +1,6 @@
 // RWA Asset Factory Configuration
-export const RWA_ASSET_FACTORY_ADDRESS = '0xB45E961d7338eb289CF399f643aba322683bEAAd';
-
-// RWA Asset Factory ABI (内嵌方式)
+export const RWA_ASSET_FACTORY_ADDRESS = '0x2bE8AB1dcC952C4d8A2bDE41691F9B672294e020';
 export const RWA_ASSET_FACTORY_ABI = [
-  {
-    "inputs": [],
-    "name": "AssetAlreadyExists",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "AssetNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidParameters",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256"
-      }
-    ],
-    "name": "AssetSubscribed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      }
-    ],
-    "name": "AssetCreated",
-    "type": "event"
-  },
   {
     "inputs": [
       {
@@ -109,12 +48,12 @@ export const RWA_ASSET_FACTORY_ABI = [
         "type": "string"
       }
     ],
-    "name": "getAssetAddress",
+    "name": "getAllAssetNames",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "string[]",
         "name": "",
-        "type": "address"
+        "type": "string[]"
       }
     ],
     "stateMutability": "view",
@@ -163,85 +102,8 @@ export const RWA_ASSET_FACTORY_ABI = [
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAllAssetNames",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAssetCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256"
-      }
-    ],
-    "name": "subscribeToAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "encryptedShares",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "inputProof",
-        "type": "bytes"
-      }
-    ],
-    "name": "subscribeToAssetEncrypted",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   }
-] as const;
+];
 
 // Network Configuration
 export const SEPOLIA_CHAIN_ID = 11155111;
@@ -249,10 +111,10 @@ export const SEPOLIA_RPC_URL = 'https://1rpc.io/sepolia';
 
 // Deployment Info
 export const DEPLOYMENT_INFO = {
-  contractAddress: '0xB45E961d7338eb289CF399f643aba322683bEAAd',
+  contractAddress: '0x2bE8AB1dcC952C4d8A2bDE41691F9B672294e020',
   network: 'sepolia',
   chainId: 11155111,
   deployer: '0x912aF42009e089979bA3A304b8A7623AB11e090f',
-  timestamp: '2025-10-16T07:15:38.723Z',
+  timestamp: '2025-10-16T07:33:29.211Z',
   status: 'deployed'
 };
