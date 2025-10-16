@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/bundle';
+
+// FHE SDK will be loaded from CDN script
+declare global {
+  interface Window {
+    Zama?: {
+      initSDK: () => Promise<void>;
+      createInstance: (config: any) => Promise<any>;
+      SepoliaConfig: any;
+    };
+  }
+}
 
 // FHE handle conversion function based on project experience
 const convertHex = (handle: any): string => {
@@ -40,6 +50,11 @@ export function useZamaInstance() {
     const initZama = async () => {
       try {
         console.log('🔍 Starting FHE SDK initialization...');
+        console.log('🌐 Window object available:', typeof window !== 'undefined');
+        console.log('🔧 Zama object available:', !!(window as any).Zama);
+        console.log('📦 initSDK function available:', !!(window as any).Zama?.initSDK);
+        console.log('🏗️ createInstance function available:', !!(window as any).Zama?.createInstance);
+        
         setIsLoading(true);
         setError(null);
         
@@ -50,10 +65,10 @@ export function useZamaInstance() {
         }
         
         console.log('📦 Initializing FHE SDK...');
-        await initSDK();
+        await window.Zama!.initSDK();
         
         console.log('🏗️ Creating FHE instance...');
-        const zamaInstance = await createInstance(SepoliaConfig);
+        const zamaInstance = await window.Zama!.createInstance(window.Zama!.SepoliaConfig);
 
         if (mounted) {
           setInstance(zamaInstance);
@@ -75,7 +90,11 @@ export function useZamaInstance() {
     };
 
     // Add a small delay to ensure CDN script is loaded
-    const timer = setTimeout(initZama, 1000);
+    console.log('⏰ Setting up FHE initialization timer...');
+    const timer = setTimeout(() => {
+      console.log('⏰ FHE initialization timer triggered');
+      initZama();
+    }, 1000);
 
     return () => {
       mounted = false;
