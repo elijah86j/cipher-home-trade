@@ -65,7 +65,7 @@ export function RWAAssetSubscription({
         
         console.log('🔒 Creating encrypted input...');
         const input = instance.createEncryptedInput(
-          assetContractAddress,
+          RWA_ASSET_FACTORY_ADDRESS,
           userAddress
         );
         
@@ -77,10 +77,10 @@ export function RWAAssetSubscription({
         const encryptedInput = await input.encrypt();
         console.log('✅ Encryption successful, handles:', encryptedInput.handles.length);
 
-        // Call encrypted subscription function directly on asset contract
-        const assetContract = new ethers.Contract(
-          assetContractAddress,
-          RWA_ASSET_ABI,
+        // Call encrypted subscription function through factory contract
+        const factoryContract = new ethers.Contract(
+          RWA_ASSET_FACTORY_ADDRESS,
+          RWA_ASSET_FACTORY_ABI,
           signer
         );
 
@@ -93,8 +93,9 @@ export function RWAAssetSubscription({
         const proof = convertHex(encryptedInput.inputProof);
         console.log('🔐 Input proof length:', proof.length);
 
-        console.log('📝 Calling encrypted subscription directly on asset contract...');
-        const tx = await assetContract.mintSharesEncrypted(
+        console.log('📝 Calling encrypted subscription through factory contract...');
+        const tx = await factoryContract.subscribeToAssetEncrypted(
+          selectedAsset.name,
           userAddress,
           convertedHandles[0],
           proof
