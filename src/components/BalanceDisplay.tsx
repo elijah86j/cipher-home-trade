@@ -15,9 +15,18 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
   // Debug logging
   useEffect(() => {
     console.log('BalanceDisplay - Assets received:', assets);
+    console.log('Assets length:', assets?.length);
     if (assets && assets.length > 0) {
       console.log('First asset:', assets[0]);
       console.log('Asset types:', assets.map(a => a.assetType));
+      console.log('All asset data:', assets.map(a => ({
+        name: a.name,
+        assetType: a.assetType,
+        totalSupply: a.totalSupply,
+        pricePerShare: a.pricePerShare
+      })));
+    } else {
+      console.log('No assets or empty array');
     }
   }, [assets]);
 
@@ -219,9 +228,31 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
             flexWrap: 'wrap',
             gap: '0.5rem'
           }}>
-            {assets && assets.length > 0 ? (
-              Array.from(new Set(assets.map(asset => asset.assetType || 'Unknown'))).map(type => {
+            {(() => {
+              console.log('Rendering asset types distribution...');
+              console.log('Assets for distribution:', assets);
+              
+              if (!assets || assets.length === 0) {
+                console.log('No assets available for distribution');
+                return (
+                  <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                    No assets loaded
+                  </span>
+                );
+              }
+              
+              const assetTypes = assets.map(asset => {
+                console.log('Asset type for:', asset.name, 'is:', asset.assetType);
+                return asset.assetType || 'Unknown';
+              });
+              console.log('All asset types:', assetTypes);
+              
+              const uniqueTypes = Array.from(new Set(assetTypes));
+              console.log('Unique asset types:', uniqueTypes);
+              
+              return uniqueTypes.map(type => {
                 const count = assets.filter(asset => (asset.assetType || 'Unknown') === type).length;
+                console.log(`Type: ${type}, Count: ${count}`);
                 return (
                   <span
                     key={type}
@@ -237,12 +268,8 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
                     {type} ({count})
                   </span>
                 );
-              })
-            ) : (
-              <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>
-                No assets loaded
-              </span>
-            )}
+              });
+            })()}
           </div>
         </div>
       )}
