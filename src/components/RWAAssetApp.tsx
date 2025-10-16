@@ -67,10 +67,10 @@ export function RWAAssetApp() {
                   name: assetName,
                   description,
                   totalSupply: Number(totalSupply),
-                  pricePerShare: Number(pricePerShare) / 1000000, // Convert from wei
+                  pricePerShare: Number(pricePerShare), // Simple contract stores price directly
                   assetType,
                   availableShares: Number(totalSupply),
-                  totalValue: Number(totalSupply) * (Number(pricePerShare) / 1000000),
+                  totalValue: Number(totalSupply) * Number(pricePerShare),
                   contractAddress: assetAddress
                 };
               } catch (assetError) {
