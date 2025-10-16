@@ -1,4 +1,4 @@
-import { Shield, Wallet, Search, Bell, User, ChevronDown, TrendingUp, Globe, Settings } from "lucide-react";
+import { Shield, Wallet, Search, Bell, User, ChevronDown, TrendingUp, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -33,18 +33,6 @@ const Header = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
-                  <Globe className="h-3 w-3" />
-                  <span>English</span>
-                  <ChevronDown className="h-3 w-3" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>English</DropdownMenuItem>
-                  <DropdownMenuItem>中文</DropdownMenuItem>
-                  <DropdownMenuItem>Español</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <span className="text-muted-foreground">USD</span>
             </div>
           </div>
@@ -68,33 +56,6 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden lg:flex items-center gap-6 ml-8">
-              <Button variant="ghost" className="text-sm font-medium">
-                Marketplace
-              </Button>
-              <Button variant="ghost" className="text-sm font-medium">
-                My Portfolio
-              </Button>
-              <Button variant="ghost" className="text-sm font-medium">
-                Analytics
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="text-sm font-medium flex items-center gap-1">
-                    Resources
-                    <ChevronDown className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>Documentation</DropdownMenuItem>
-                  <DropdownMenuItem>API Reference</DropdownMenuItem>
-                  <DropdownMenuItem>White Paper</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Help Center</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </nav>
           </div>
 
           {/* Search & Actions */}
@@ -220,23 +181,6 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        <div className="lg:hidden mt-4 pt-4 border-t border-border/50">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <Button variant="ghost" size="sm" className="whitespace-nowrap">
-              Marketplace
-            </Button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap">
-              Portfolio
-            </Button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap">
-              Analytics
-            </Button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap">
-              Resources
-            </Button>
-          </div>
-        </div>
       </div>
     </header>
   );
