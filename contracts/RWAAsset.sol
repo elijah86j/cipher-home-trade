@@ -57,12 +57,21 @@ contract RWAAsset is SepoliaConfig {
         bytes calldata inputProof
     ) external onlyFactory {
         // Core FHE encryption functionality - this is the main encrypted minting
+        // This is a demo to showcase FHE encryption, no real payment required
         euint64 shares = FHE.fromExternal(encryptedShares, inputProof);
         
-        // For encrypted shares, we can't directly update availableShares
-        // This would require FHE comparison operations
-        // The encryption is handled by the FHE system
+        // Set ACL permissions for encrypted data (required for FHE operations)
+        FHE.allowThis(shares);
+        FHE.allow(shares, to);
+        FHE.allow(shares, msg.sender);
+        
+        // Demo: Just emit the encrypted minting event
+        // In a real scenario, you would validate payment and update balances
+        // For this demo, we focus on showcasing FHE encryption capabilities
         emit SharesMinted(to, 0); // Encrypted amount - privacy preserved
+        
+        // Note: This is a demonstration of FHE encryption
+        // Real implementation would include payment validation and balance updates
     }
 
     function getAssetInfo() external view returns (
