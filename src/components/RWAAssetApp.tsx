@@ -30,146 +30,120 @@ export function RWAAssetApp() {
   const [formMessage, setFormMessage] = useState('');
 
   const loadAssets = async () => {
-    if (!isConnected) return;
-
     try {
       setLoading(true);
 
-      // Try to load from contract first
-      try {
-        // Check if wallet is connected
-        if (!window.ethereum) {
-          console.log('⚠️ No wallet connected, loading sample data');
-          throw new Error('No wallet connected');
-        }
-
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const factory = new ethers.Contract(
-          RWA_ASSET_FACTORY_ADDRESS,
-          RWA_ASSET_FACTORY_ABI,
-          provider
-        );
-
-        console.log('🔍 Loading assets from contract:', RWA_ASSET_FACTORY_ADDRESS);
-        
-        // Skip asset count check since it's not essential and causes ABI issues
-        // We'll get the count from getAllAssetNames().length instead
-
-        const assetNames = await factory.getAllAssetNames.staticCall();
-        console.log('📝 Asset names from contract:', assetNames);
-        console.log('✅ Successfully loaded', assetNames.length, 'assets from contract');
-        
-        if (assetNames.length > 0) {
-          const assetDetails = await Promise.all(
-            assetNames.map(async (name: string) => {
-              try {
-                const [assetName, description, assetType, totalSupply, availableShares, pricePerShare] = 
-                  await factory.getAssetInfo(name);
-                
-                return {
-                  id: assetNames.indexOf(name) + 1,
-                  name: assetName,
-                  description,
-                  totalSupply: Number(totalSupply),
-                  pricePerShare: Number(pricePerShare), // Simple contract stores price directly
-                  assetType,
-                  availableShares: Number(availableShares),
-                  totalValue: Number(totalSupply) * Number(pricePerShare),
-                  contractAddress: await factory.getRWAAsset(name) // Get asset address separately
-                };
-              } catch (assetError) {
-                console.error(`Failed to load asset ${name}:`, assetError);
-                return null;
-              }
-            })
+      // Try to load from contract first (only if wallet is connected)
+      if (isConnected && window.ethereum) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const factory = new ethers.Contract(
+            RWA_ASSET_FACTORY_ADDRESS,
+            RWA_ASSET_FACTORY_ABI,
+            provider
           );
 
-          // Filter out null values
-          const validAssets = assetDetails.filter(asset => asset !== null);
-          console.log('Loaded assets:', validAssets);
-          setAssets(validAssets);
-          return;
-        } else {
-          console.log('No assets found in contract');
-          setAssets([]);
-          return;
-        }
-      } catch (error) {
-        console.error('Failed to load assets from contract:', error);
+          console.log('🔍 Loading assets from contract:', RWA_ASSET_FACTORY_ADDRESS);
         
-        // Try to load from sample data as fallback
-        try {
-          const sampleData = await import('../data/sample-assets.json');
-          if (sampleData.assets && sampleData.assets.length > 0) {
-            console.log('🔄 Loading sample assets as fallback (contract failed)');
-            setAssets(sampleData.assets);
+          const assetNames = await factory.getAllAssetNames.staticCall();
+          console.log('📝 Asset names from contract:', assetNames);
+          console.log('✅ Successfully loaded', assetNames.length, 'assets from contract');
+          
+          if (assetNames.length > 0) {
+            const assetDetails = await Promise.all(
+              assetNames.map(async (name: string) => {
+                try {
+                  const [assetName, description, assetType, totalSupply, availableShares, pricePerShare] = 
+                    await factory.getAssetInfo(name);
+                  
+                  return {
+                    id: assetNames.indexOf(name) + 1,
+                    name: assetName,
+                    description,
+                    totalSupply: Number(totalSupply),
+                    pricePerShare: Number(pricePerShare),
+                    assetType,
+                    availableShares: Number(availableShares),
+                    totalValue: Number(totalSupply) * Number(pricePerShare),
+                    contractAddress: await factory.getRWAAsset(name)
+                  };
+                } catch (assetError) {
+                  console.error(`Failed to load asset ${name}:`, assetError);
+                  return null;
+                }
+              })
+            );
+
+            const validAssets = assetDetails.filter(asset => asset !== null);
+            console.log('Loaded assets:', validAssets);
+            setAssets(validAssets);
             return;
           }
-        } catch (sampleError) {
-          console.log('❌ No sample data available:', sampleError);
+        } catch (error) {
+          console.error('Failed to load assets from contract:', error);
         }
-        
-        // Final fallback - create demo assets
-        console.log('🔄 Creating demo assets as final fallback');
-        const demoAssets = [
-          {
-            id: 1,
-            name: "Manhattan Office Tower",
-            description: "Premium office building in Midtown Manhattan with 50 floors, featuring modern amenities and prime location near Central Park.",
-            totalSupply: 1000000,
-            pricePerShare: 100,
-            assetType: "Commercial Real Estate",
-            availableShares: 1000000,
-            totalValue: 100000000,
-            contractAddress: "0x0000000000000000000000000000000000000000"
-          },
-          {
-            id: 2,
-            name: "Silicon Valley Tech Campus",
-            description: "State-of-the-art technology campus in Palo Alto, California, with 200,000 sq ft of office space and research facilities.",
-            totalSupply: 500000,
-            pricePerShare: 250,
-            assetType: "Commercial Real Estate",
-            availableShares: 500000,
-            totalValue: 125000000,
-            contractAddress: "0x0000000000000000000000000000000000000000"
-          },
-          {
-            id: 3,
-            name: "London Luxury Apartments",
-            description: "High-end residential complex in Canary Wharf, London, with 150 luxury apartments and premium amenities.",
-            totalSupply: 750000,
-            pricePerShare: 150,
-            assetType: "Residential Real Estate",
-            availableShares: 750000,
-            totalValue: 112500000,
-            contractAddress: "0x0000000000000000000000000000000000000000"
-          },
-          {
-            id: 4,
-            name: "Tokyo Shopping Mall",
-            description: "Modern shopping center in Shibuya, Tokyo, with 300 retail units and entertainment facilities.",
-            totalSupply: 800000,
-            pricePerShare: 80,
-            assetType: "Retail Real Estate",
-            availableShares: 800000,
-            totalValue: 64000000,
-            contractAddress: "0x0000000000000000000000000000000000000000"
-          },
-          {
-            id: 5,
-            name: "Dubai Marina Hotel",
-            description: "Luxury hotel and resort in Dubai Marina with 500 rooms, conference facilities, and beachfront access.",
-            totalSupply: 600000,
-            pricePerShare: 200,
-            assetType: "Hospitality Real Estate",
-            availableShares: 600000,
-            totalValue: 120000000,
-            contractAddress: "0x0000000000000000000000000000000000000000"
-          }
-        ];
-        setAssets(demoAssets);
       }
+      
+      // If wallet not connected or contract failed, load demo assets
+      console.log('🔄 Loading demo assets (no wallet connected or contract failed)');
+      const demoAssets = [
+        {
+          id: 1,
+          name: "Manhattan Office Tower",
+          description: "Premium office building in Midtown Manhattan with 50 floors, featuring modern amenities and prime location near Central Park.",
+          totalSupply: 1000000,
+          pricePerShare: 100,
+          assetType: "Commercial Real Estate",
+          availableShares: 1000000,
+          totalValue: 100000000,
+          contractAddress: "0x0000000000000000000000000000000000000000"
+        },
+        {
+          id: 2,
+          name: "Silicon Valley Tech Campus",
+          description: "State-of-the-art technology campus in Palo Alto, California, with 200,000 sq ft of office space and research facilities.",
+          totalSupply: 500000,
+          pricePerShare: 250,
+          assetType: "Commercial Real Estate",
+          availableShares: 500000,
+          totalValue: 125000000,
+          contractAddress: "0x0000000000000000000000000000000000000000"
+        },
+        {
+          id: 3,
+          name: "London Luxury Apartments",
+          description: "High-end residential complex in Canary Wharf, London, with 150 luxury apartments and premium amenities.",
+          totalSupply: 750000,
+          pricePerShare: 150,
+          assetType: "Residential Real Estate",
+          availableShares: 750000,
+          totalValue: 112500000,
+          contractAddress: "0x0000000000000000000000000000000000000000"
+        },
+        {
+          id: 4,
+          name: "Tokyo Shopping Mall",
+          description: "Modern shopping center in Shibuya, Tokyo, with 300 retail units and entertainment facilities.",
+          totalSupply: 800000,
+          pricePerShare: 80,
+          assetType: "Retail Real Estate",
+          availableShares: 800000,
+          totalValue: 64000000,
+          contractAddress: "0x0000000000000000000000000000000000000000"
+        },
+        {
+          id: 5,
+          name: "Dubai Marina Hotel",
+          description: "Luxury hotel and resort in Dubai Marina with 500 rooms, conference facilities, and beachfront access.",
+          totalSupply: 600000,
+          pricePerShare: 200,
+          assetType: "Hospitality Real Estate",
+          availableShares: 600000,
+          totalValue: 120000000,
+          contractAddress: "0x0000000000000000000000000000000000000000"
+        }
+      ];
+      setAssets(demoAssets);
     } catch (error) {
       console.error('Failed to load RWA assets:', error);
     } finally {
@@ -178,9 +152,7 @@ export function RWAAssetApp() {
   };
 
   useEffect(() => {
-    if (isConnected) {
-      loadAssets();
-    }
+    loadAssets();
   }, [isConnected]);
 
   const handleAssetSelect = (asset: RWAAsset) => {
