@@ -3,8 +3,40 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { useZamaInstance, convertHex } from '../hooks/useZamaInstance';
 import { useEthersSigner } from '../hooks/useEthersSigner';
-import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI, RWA_ASSET_ABI } from '../config/contracts';
+import { RWA_ASSET_FACTORY_ADDRESS } from '../config/contracts';
 import type { RWAAsset } from '../types';
+
+// Inline ABI for subscribeToAssetEncrypted function (内嵌方式)
+const subscribeToAssetEncryptedABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "assetName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "encryptedShares",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "inputProof",
+        "type": "bytes"
+      }
+    ],
+    "name": "subscribeToAssetEncrypted",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
 
 interface RWAAssetSubscriptionProps {
   selectedAsset: RWAAsset | null;
@@ -80,7 +112,7 @@ export function RWAAssetSubscription({
         // Call encrypted subscription function through factory contract
         const factoryContract = new ethers.Contract(
           RWA_ASSET_FACTORY_ADDRESS,
-          RWA_ASSET_FACTORY_ABI,
+          subscribeToAssetEncryptedABI,
           signer
         );
 
@@ -112,7 +144,7 @@ export function RWAAssetSubscription({
         
         const factoryContract = new ethers.Contract(
           RWA_ASSET_FACTORY_ADDRESS,
-          RWA_ASSET_FACTORY_ABI,
+          subscribeToAssetEncryptedABI,
           signer
         );
 
