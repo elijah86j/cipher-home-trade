@@ -69,9 +69,9 @@ export function RWAAssetSubscription({
           userAddress
         );
         
-        // Use correct data type for externalEuint64 (like cipher-policy-hub)
+        // Use correct data type for externalEuint32 (like cipher-policy-hub)
         console.log('📊 Adding shares to encrypted input:', sharesNum);
-        input.add64(BigInt(sharesNum));
+        input.add32(BigInt(sharesNum));
         
         console.log('🔐 Encrypting input...');
         const encryptedInput = await input.encrypt();
