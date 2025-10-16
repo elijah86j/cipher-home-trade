@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {FHE, externalEuint32, euint32} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, externalEuint64, euint64} from "@fhevm/solidity/lib/FHE.sol";
 import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 contract RWAAsset is SepoliaConfig {
@@ -53,16 +53,17 @@ contract RWAAsset is SepoliaConfig {
 
     function mintSharesEncrypted(
         address to,
-        externalEuint32 encryptedShares,
+        externalEuint64 encryptedShares,
         bytes calldata inputProof
-    ) external onlyFactory {
+    ) external 
+    {
         // Basic validation
         require(to != address(0), "Invalid recipient address");
         require(inputProof.length > 0, "Invalid input proof");
         
         // Core FHE encryption functionality - this is the main encrypted minting
         // This is a demo to showcase FHE encryption, no real payment required
-        euint32 shares = FHE.fromExternal(encryptedShares, inputProof);
+        euint64 shares = FHE.fromExternal(encryptedShares, inputProof);
         
         // Set ACL permissions for encrypted data (参考 StockRWA 项目)
         FHE.allowThis(shares);

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {RWAAsset} from "./RWAAsset.sol";
-import {externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
+import {externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
 import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 contract RWAAssetFactory is SepoliaConfig {
@@ -66,7 +66,7 @@ contract RWAAssetFactory is SepoliaConfig {
     function subscribeToAssetEncrypted(
         string memory assetName,
         address subscriber,
-        externalEuint32 encryptedShares,
+        externalEuint64 encryptedShares,
         bytes calldata inputProof
     ) external {
         address assetAddress = rwaAssets[assetName];
