@@ -1,34 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Shield, TrendingUp, Users } from "lucide-react";
+import { DollarSign, Shield, TrendingUp, Building2 } from "lucide-react";
 
 const MarketplaceStats = () => {
   const stats = [
     {
-      title: "Total Volume",
-      value: "$24.8M",
-      change: "+12.3%",
-      icon: DollarSign,
+      title: "Available Assets",
+      value: "5 Assets",
+      change: "New listings",
+      icon: TrendingUp,
       color: "text-primary"
     },
     {
-      title: "Active Properties",
-      value: "127",
+      title: "Total Portfolio Value",
+      value: "$521,500,000",
       change: "+8.1%",
-      icon: TrendingUp,
+      icon: DollarSign,
       color: "text-secondary"
     },
     {
-      title: "Encrypted Trades",
-      value: "1,543",
-      change: "+23.7%",
+      title: "My Subscriptions",
+      value: "3",
+      change: "Active",
       icon: Shield,
       color: "text-accent"
     },
     {
-      title: "Active Traders",
-      value: "892",
+      title: "Total Shares Owned",
+      value: "2,450",
       change: "+15.2%",
-      icon: Users,
+      icon: Building2,
       color: "text-muted-foreground"
     }
   ];
