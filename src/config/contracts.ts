@@ -1,6 +1,67 @@
 // RWA Asset Factory Configuration
 export const RWA_ASSET_FACTORY_ADDRESS = '0xB45E961d7338eb289CF399f643aba322683bEAAd';
+
+// RWA Asset Factory ABI (内嵌方式)
 export const RWA_ASSET_FACTORY_ABI = [
+  {
+    "inputs": [],
+    "name": "AssetAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AssetNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidParameters",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "AssetSubscribed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "assetName",
+        "type": "string"
+      }
+    ],
+    "name": "AssetCreated",
+    "type": "event"
+  },
   {
     "inputs": [
       {
@@ -48,12 +109,12 @@ export const RWA_ASSET_FACTORY_ABI = [
         "type": "string"
       }
     ],
-    "name": "getAllAssetNames",
+    "name": "getAssetAddress",
     "outputs": [
       {
-        "internalType": "string[]",
+        "internalType": "address",
         "name": "",
-        "type": "string[]"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -102,8 +163,85 @@ export const RWA_ASSET_FACTORY_ABI = [
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllAssetNames",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAssetCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "assetName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "subscribeToAsset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "assetName",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "subscriber",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "encryptedShares",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "inputProof",
+        "type": "bytes"
+      }
+    ],
+    "name": "subscribeToAssetEncrypted",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
-];
+] as const;
 
 // Network Configuration
 export const SEPOLIA_CHAIN_ID = 11155111;
