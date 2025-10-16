@@ -5,12 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server: {
     host: "::",
-    port: 8080,
-    headers: {
-      // Required headers for FHE SDK threads support
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp'
-    }
+    port: 8080
   },
   plugins: [react()],
   resolve: {
@@ -22,12 +17,6 @@ export default defineConfig({
     global: 'globalThis', // Critical: solve FHE SDK global undefined issue
   },
   optimizeDeps: {
-    exclude: ['valtio/vanilla', 'valtio'],
     include: ['@zama-fhe/relayer-sdk/bundle'] // Pre-build FHE SDK
-  },
-  build: {
-    rollupOptions: {
-      external: ['valtio/vanilla', 'valtio']
-    }
   }
 })

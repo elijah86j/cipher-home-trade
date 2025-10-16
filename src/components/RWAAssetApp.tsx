@@ -37,6 +37,12 @@ export function RWAAssetApp() {
 
       // Try to load from contract first
       try {
+        // Check if wallet is connected
+        if (!window.ethereum) {
+          console.log('⚠️ No wallet connected, loading sample data');
+          throw new Error('No wallet connected');
+        }
+
         const provider = new ethers.BrowserProvider(window.ethereum);
         const factory = new ethers.Contract(
           RWA_ASSET_FACTORY_ADDRESS,
@@ -103,7 +109,66 @@ export function RWAAssetApp() {
           console.log('❌ No sample data available:', sampleError);
         }
         
-        setAssets([]); // Set empty array if everything fails
+        // Final fallback - create demo assets
+        console.log('🔄 Creating demo assets as final fallback');
+        const demoAssets = [
+          {
+            id: 1,
+            name: "Manhattan Office Tower",
+            description: "Premium office building in Midtown Manhattan with 50 floors, featuring modern amenities and prime location near Central Park.",
+            totalSupply: 1000000,
+            pricePerShare: 100,
+            assetType: "Commercial Real Estate",
+            availableShares: 1000000,
+            totalValue: 100000000,
+            contractAddress: "0x0000000000000000000000000000000000000000"
+          },
+          {
+            id: 2,
+            name: "Silicon Valley Tech Campus",
+            description: "State-of-the-art technology campus in Palo Alto, California, with 200,000 sq ft of office space and research facilities.",
+            totalSupply: 500000,
+            pricePerShare: 250,
+            assetType: "Commercial Real Estate",
+            availableShares: 500000,
+            totalValue: 125000000,
+            contractAddress: "0x0000000000000000000000000000000000000000"
+          },
+          {
+            id: 3,
+            name: "London Luxury Apartments",
+            description: "High-end residential complex in Canary Wharf, London, with 150 luxury apartments and premium amenities.",
+            totalSupply: 750000,
+            pricePerShare: 150,
+            assetType: "Residential Real Estate",
+            availableShares: 750000,
+            totalValue: 112500000,
+            contractAddress: "0x0000000000000000000000000000000000000000"
+          },
+          {
+            id: 4,
+            name: "Tokyo Shopping Mall",
+            description: "Modern shopping center in Shibuya, Tokyo, with 300 retail units and entertainment facilities.",
+            totalSupply: 800000,
+            pricePerShare: 80,
+            assetType: "Retail Real Estate",
+            availableShares: 800000,
+            totalValue: 64000000,
+            contractAddress: "0x0000000000000000000000000000000000000000"
+          },
+          {
+            id: 5,
+            name: "Dubai Marina Hotel",
+            description: "Luxury hotel and resort in Dubai Marina with 500 rooms, conference facilities, and beachfront access.",
+            totalSupply: 600000,
+            pricePerShare: 200,
+            assetType: "Hospitality Real Estate",
+            availableShares: 600000,
+            totalValue: 120000000,
+            contractAddress: "0x0000000000000000000000000000000000000000"
+          }
+        ];
+        setAssets(demoAssets);
       }
     } catch (error) {
       console.error('Failed to load RWA assets:', error);
