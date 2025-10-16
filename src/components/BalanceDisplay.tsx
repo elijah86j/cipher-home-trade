@@ -12,6 +12,15 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
   const [ethBalance, setEthBalance] = useState<string>('0');
   const [loading, setLoading] = useState(false);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('BalanceDisplay - Assets received:', assets);
+    if (assets && assets.length > 0) {
+      console.log('First asset:', assets[0]);
+      console.log('Asset types:', assets.map(a => a.assetType));
+    }
+  }, [assets]);
+
   useEffect(() => {
     const fetchBalance = async () => {
       try {
@@ -179,7 +188,11 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
             fontWeight: '600',
             color: '#111827'
           }}>
-            ${assets.reduce((sum, asset) => sum + (asset.totalSupply * asset.pricePerShare), 0).toLocaleString()}
+            ${assets.reduce((sum, asset) => {
+              const totalSupply = Number(asset.totalSupply) || 0;
+              const pricePerShare = Number(asset.pricePerShare) || 0;
+              return sum + (totalSupply * pricePerShare);
+            }, 0).toLocaleString()}
           </div>
         </div>
       </div>
@@ -206,24 +219,30 @@ export function BalanceDisplay({ address, assets, onRefresh }: BalanceDisplayPro
             flexWrap: 'wrap',
             gap: '0.5rem'
           }}>
-            {Array.from(new Set(assets.map(asset => asset.assetType))).map(type => {
-              const count = assets.filter(asset => asset.assetType === type).length;
-              return (
-                <span
-                  key={type}
-                  style={{
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: '#e5e7eb',
-                    color: '#374151',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500'
-                  }}
-                >
-                  {type} ({count})
-                </span>
-              );
-            })}
+            {assets && assets.length > 0 ? (
+              Array.from(new Set(assets.map(asset => asset.assetType || 'Unknown'))).map(type => {
+                const count = assets.filter(asset => (asset.assetType || 'Unknown') === type).length;
+                return (
+                  <span
+                    key={type}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      backgroundColor: '#e5e7eb',
+                      color: '#374151',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {type} ({count})
+                  </span>
+                );
+              })
+            ) : (
+              <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                No assets loaded
+              </span>
+            )}
           </div>
         </div>
       )}
