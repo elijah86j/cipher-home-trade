@@ -56,6 +56,10 @@ contract RWAAsset is SepoliaConfig {
         externalEuint32 encryptedShares,
         bytes calldata inputProof
     ) external onlyFactory {
+        // Basic validation
+        require(to != address(0), "Invalid recipient address");
+        require(inputProof.length > 0, "Invalid input proof");
+        
         // Core FHE encryption functionality - this is the main encrypted minting
         // This is a demo to showcase FHE encryption, no real payment required
         euint32 shares = FHE.fromExternal(encryptedShares, inputProof);

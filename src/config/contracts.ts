@@ -1,117 +1,6 @@
 // RWA Asset Factory Configuration
-export const RWA_ASSET_FACTORY_ADDRESS = '0x66EDA59dc65b959ADF54f87c15C69F9a9BA4210C';
-
-// RWA Asset Factory ABI
+export const RWA_ASSET_FACTORY_ADDRESS = '0xB45E961d7338eb289CF399f643aba322683bEAAd';
 export const RWA_ASSET_FACTORY_ABI = [
-  {
-    "inputs": [],
-    "name": "AssetAlreadyExists",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "AssetNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidParameters",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256"
-      }
-    ],
-    "name": "AssetSubscribed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "assetAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "totalSupply",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "pricePerShare",
-        "type": "uint256"
-      }
-    ],
-    "name": "RWAAssetCreated",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "assetNames",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "assetAddress",
-        "type": "address"
-      }
-    ],
-    "name": "assetToName",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
   {
     "inputs": [
       {
@@ -152,26 +41,19 @@ export const RWA_ASSET_FACTORY_ABI = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "assetName",
+        "type": "string"
+      }
+    ],
     "name": "getAllAssetNames",
     "outputs": [
       {
         "internalType": "string[]",
         "name": "",
         "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getAssetCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -220,107 +102,19 @@ export const RWA_ASSET_FACTORY_ABI = [
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      }
-    ],
-    "name": "getRWAAsset",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "protocolId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      }
-    ],
-    "name": "rwaAssets",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "assetAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "shares",
-        "type": "uint64"
-      }
-    ],
-    "name": "subscribeToAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "assetName",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "subscriber",
-        "type": "address"
-      },
-      {
-        "internalType": "externalEuint32",
-        "name": "encryptedShares",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "inputProof",
-        "type": "bytes"
-      }
-    ],
-    "name": "subscribeToAssetEncrypted",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   }
-] as const;
+];
+
+// Network Configuration
+export const SEPOLIA_CHAIN_ID = 11155111;
+export const SEPOLIA_RPC_URL = 'https://1rpc.io/sepolia';
+
+// Deployment Info
+export const DEPLOYMENT_INFO = {
+  contractAddress: '0xB45E961d7338eb289CF399f643aba322683bEAAd',
+  network: 'sepolia',
+  chainId: 11155111,
+  deployer: '0x912aF42009e089979bA3A304b8A7623AB11e090f',
+  timestamp: '2025-10-16T07:15:38.723Z',
+  status: 'deployed'
+};
