@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import * as ZamaSDK from '@zama-fhe/relayer-sdk/bundle';
+import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/bundle';
 
 // FHE handle conversion function based on project experience
 const convertHex = (handle: any): string => {
