@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { useZamaInstance, convertHex } from '../hooks/useZamaInstance';
 import { useEthersSigner } from '../hooks/useEthersSigner';
-import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI } from '../config/contracts';
+import { RWA_ASSET_FACTORY_ADDRESS, RWA_ASSET_FACTORY_ABI, RWA_ASSET_ABI } from '../config/contracts';
 import type { RWAAsset } from '../types';
 
 interface RWAAssetSubscriptionProps {
@@ -77,10 +77,10 @@ export function RWAAssetSubscription({
         const encryptedInput = await input.encrypt();
         console.log('✅ Encryption successful, handles:', encryptedInput.handles.length);
 
-        // Call encrypted subscription function
-        const factoryContract = new ethers.Contract(
-          RWA_ASSET_FACTORY_ADDRESS,
-          RWA_ASSET_FACTORY_ABI,
+        // Call encrypted subscription function directly on asset contract
+        const assetContract = new ethers.Contract(
+          assetContractAddress,
+          RWA_ASSET_ABI,
           signer
         );
 
@@ -93,9 +93,8 @@ export function RWAAssetSubscription({
         const proof = convertHex(encryptedInput.inputProof);
         console.log('🔐 Input proof length:', proof.length);
 
-        console.log('📝 Calling encrypted subscription contract...');
-        const tx = await factoryContract.subscribeToAssetEncrypted(
-          selectedAsset.name,
+        console.log('📝 Calling encrypted subscription directly on asset contract...');
+        const tx = await assetContract.mintSharesEncrypted(
           userAddress,
           convertedHandles[0],
           proof
