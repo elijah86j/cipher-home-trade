@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react';
-
-// FHE SDK will be loaded from CDN script
-declare global {
-  interface Window {
-    Zama?: {
-      initSDK: () => Promise<void>;
-      createInstance: (config: any) => Promise<any>;
-      SepoliaConfig: any;
-    };
-  }
-}
+import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/bundle';
 
 // FHE handle conversion function based on project experience
 const convertHex = (handle: any): string => {
@@ -50,25 +40,14 @@ export function useZamaInstance() {
     const initZama = async () => {
       try {
         console.log('🔍 Starting FHE SDK initialization...');
-        console.log('🌐 Window object available:', typeof window !== 'undefined');
-        console.log('🔧 Zama object available:', !!(window as any).Zama);
-        console.log('📦 initSDK function available:', !!(window as any).Zama?.initSDK);
-        console.log('🏗️ createInstance function available:', !!(window as any).Zama?.createInstance);
-        
         setIsLoading(true);
         setError(null);
         
-        // Check if FHE SDK is available
-        if (typeof window !== 'undefined' && !(window as any).Zama) {
-          console.warn('⚠️ FHE SDK not loaded from CDN, retrying...');
-          throw new Error('FHE SDK not loaded from CDN');
-        }
-        
         console.log('📦 Initializing FHE SDK...');
-        await window.Zama!.initSDK();
+        await initSDK();
         
         console.log('🏗️ Creating FHE instance...');
-        const zamaInstance = await window.Zama!.createInstance(window.Zama!.SepoliaConfig);
+        const zamaInstance = await createInstance(SepoliaConfig);
 
         if (mounted) {
           setInstance(zamaInstance);
@@ -89,16 +68,10 @@ export function useZamaInstance() {
       }
     };
 
-    // Add a small delay to ensure CDN script is loaded
-    console.log('⏰ Setting up FHE initialization timer...');
-    const timer = setTimeout(() => {
-      console.log('⏰ FHE initialization timer triggered');
-      initZama();
-    }, 1000);
+    initZama();
 
     return () => {
       mounted = false;
-      clearTimeout(timer);
     };
   }, []);
 
