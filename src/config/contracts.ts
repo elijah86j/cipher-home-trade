@@ -1,6 +1,8 @@
 // RWA Asset Factory Configuration
 export const RWA_ASSET_FACTORY_ADDRESS = '0x66EDA59dc65b959ADF54f87c15C69F9a9BA4210C';
-[
+
+// RWA Asset Factory ABI
+export const RWA_ASSET_FACTORY_ABI = [
   {
     "inputs": [],
     "name": "AssetAlreadyExists",
@@ -321,4 +323,4 @@ export const RWA_ASSET_FACTORY_ADDRESS = '0x66EDA59dc65b959ADF54f87c15C69F9a9BA4
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+] as const;
